@@ -10,6 +10,7 @@ import EmployeeChoiceEventHandler from "./eventHandlers/employeeChoice";
 import FeedbackEventHandler from "./eventHandlers/feedback";
 import MenuItemEventHandler from "./eventHandlers/menuItem";
 import NotificationEventHandler from "./eventHandlers/notification";
+import RecommendationEventHandler from "./eventHandlers/recommendation";
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -25,6 +26,7 @@ io.on("connection", (socket: Socket) => {
     const feedbackEventHandler = new FeedbackEventHandler(socket)
     const menuItemEventHandler = new MenuItemEventHandler(socket)
     const notificationEventHandler = new NotificationEventHandler(socket)
+    const recommendationEventHandler = new RecommendationEventHandler(socket)
 
     console.log(`New client connected: ${socket.id}`);
 
@@ -36,6 +38,7 @@ io.on("connection", (socket: Socket) => {
     feedbackEventHandler.listen()
     menuItemEventHandler.listen()
     notificationEventHandler.listen()
+    recommendationEventHandler.listen()
 
     socket.on("disconnect", () => {
         console.log(`Client disconnected: ${socket.id}`);

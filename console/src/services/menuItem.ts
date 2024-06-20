@@ -1,4 +1,4 @@
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import { MenuItem } from '../types/menuItem.js';
 
 class MenuItemService {
