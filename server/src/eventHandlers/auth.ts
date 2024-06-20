@@ -1,5 +1,4 @@
 import { Socket } from "socket.io";
-
 import AuthSocketHandler from "../socketHandlers/auth";
 
 const authSocketHandler = new AuthSocketHandler();

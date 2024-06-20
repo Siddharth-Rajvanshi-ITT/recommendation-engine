@@ -38,7 +38,9 @@ class MenuItemController {
     };
 
     public updateMenuItem = async (socket: Socket, data: any): Promise<void> => {
-        const { id, name, description, category, price, availability_status } = data;
+        const id = data.id;
+        const { name, description, category, price, availability_status } = data.menuItem;
+
         try {
             const menuItem = await this.menuItemService.updateMenuItem(+id, name, description, category, price, availability_status);
             socket.emit('updateMenuItemSuccess', menuItem);

@@ -26,11 +26,15 @@ async function main() {
                 { name: 'Admin', value: UserType.ADMIN },
                 { name: 'Chef', value: UserType.CHEF },
                 { name: 'Employee', value: UserType.EMPLOYEE },
+                { name: 'Exit', value: 'exit' },
+
             ],
         },
     ]);
 
-    const { employeeId, name } = await inquirer.prompt([
+    if(userType === 'exit') process.exit(0);
+
+    const { employeeId, password } = await inquirer.prompt([
         {
             type: 'input',
             name: 'employeeId',
@@ -38,31 +42,36 @@ async function main() {
         },
         {
             type: 'input',
-            name: 'name',
-            message: 'Enter your name:',
+            name: 'password',
+            message: 'Enter your password:',
         },
     ]);
 
     try {
-        const user = await authService.login(employeeId, name);
+        const user = await authService.login(employeeId, password);
+
+        if(user.role != userType){
+            console.log('Invalid Credentials')
+            return;
+        }
 
         if (user) {
             console.log(`Welcome, ${user.name}!`);
-            switch (userType) {
-                case UserType.ADMIN:
-                    await adminCommands.displayMenu(IO);
-                    break;
-                case UserType.CHEF:
-                    await chefCommands.displayMenu(IO);
-                    break;
-                case UserType.EMPLOYEE:
-                    await employeeCommands.displayMenu(IO, user);
-                    break;
-                default:
-                    console.log('Invalid user type.');
-            }
-
-            main()
+                switch (userType) {
+                    case UserType.ADMIN:
+                        await adminCommands.displayMenu(IO);
+                        break;
+                    case UserType.CHEF:
+                        await chefCommands.displayMenu(IO);
+                        break;
+                    case UserType.EMPLOYEE:
+                        await employeeCommands.displayMenu(IO, user);
+                        break;                
+                    default:
+                        console.log('Invalid user type.');
+                }
+            
+            process.exit(0);
 
         } else {
             console.log('Login failed. Please check your credentials.');

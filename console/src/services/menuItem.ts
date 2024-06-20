@@ -50,8 +50,9 @@ class MenuItemService {
         });
     }
 
-    public async updateMenuItem(id: number, menuItem: MenuItem): Promise<MenuItem> {
+    public async updateMenuItem(id: number, menuItem: any): Promise<MenuItem> {
         return new Promise((resolve, reject) => {
+            console.log(menuItem)
             this.socket.emit('updateMenuItem', { id, menuItem });
 
             this.socket.on('updateMenuItemSuccess', (data: MenuItem) => {
