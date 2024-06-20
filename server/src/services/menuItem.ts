@@ -37,11 +37,25 @@ class MenuItemService {
             if (!menuItem) {
                 throw new Error("Menu item not found");
             }
-            menuItem.name = name;
-            menuItem.description = description;
-            menuItem.category = category;
-            menuItem.price = price;
-            menuItem.availability_status = availability_status;
+
+            // console.log(name, description, category, price, availability_status)
+
+            if (name){
+                menuItem.name = name;
+            }
+            if (description){
+                menuItem.description = description;
+            }
+            if (category){
+                menuItem.category = category;
+            }
+            if (price){
+                menuItem.price = price;
+            }
+            if (availability_status){
+                menuItem.availability_status = availability_status;
+            }
+
             await menuItem.save();
             return menuItem;
         } catch (error) {

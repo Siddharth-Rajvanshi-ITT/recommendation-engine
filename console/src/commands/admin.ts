@@ -1,17 +1,15 @@
 import inquirer from 'inquirer';
 import MenuItemService from '../services/menuItem.js';
-import NotificationService from '../services/notification.js';
 import { MenuItem } from '../types/menuItem.js';
 import { Socket } from 'socket.io-client';
-
+import CommonCommands from './common.js';
 
 let menuItemService: MenuItemService
-let notificationService: NotificationService
+const commonCommands = new CommonCommands()
 
 class AdminCommands {
     async displayMenu(io: Socket): Promise<void> {
         menuItemService = new MenuItemService(io);
-        notificationService = new NotificationService(io);
 
         const answers = await inquirer.prompt([
             {
@@ -20,6 +18,7 @@ class AdminCommands {
                 message: 'Choose an admin command:',
                 choices: [
                     { name: 'Add Menu Item', value: 'addMenuItem' },
+                    { name: 'See Menu Item', value: 'seeMenuItem' },
                     { name: 'Update Menu Item', value: 'updateMenuItem' },
                     { name: 'Delete Menu Item', value: 'deleteMenuItem' },
                     { name: 'Exit', value: 'exit' },
@@ -38,13 +37,16 @@ class AdminCommands {
             case 'deleteMenuItem':
                 await this.deleteMenuItem();
                 break;
+            case 'seeMenuItem':
+                await commonCommands.showMenuItems(io);
+                break;
             case 'exit': return;
 
             default:
                 console.log('Invalid command.');
         }
 
-        this.displayMenu(io);
+        await this.displayMenu(io);
     }
 
     async addMenuItem(): Promise<void> {
@@ -73,29 +75,60 @@ class AdminCommands {
     }
 
     async updateMenuItem(): Promise<void> {
-        const { id } = await inquirer.prompt([
+        const { id, choice } = await inquirer.prompt([
             { type: 'input', name: 'id', message: 'Enter the ID of the menu item to update:' },
+            {
+                type: 'list', name: 'choice', message: 'What do you want to update:', choices: [
+                    { name: 'Item Name', value: 'itemName' },
+                    { name: 'Description', value: 'description' },
+                    { name: 'Category', value: 'category' },
+                    { name: 'Price', value: 'price' },
+                    { name: 'Availability Status', value: 'availability_status' },
+                ]
+            },
         ]);
 
-        const answers = await inquirer.prompt([
-            { type: 'input', name: 'name', message: 'Enter new menu item name:' },
-            { type: 'input', name: 'description', message: 'Enter new menu item description:' },
-            { type: 'list', name: 'category', message: 'Select new menu item category:', choices: ['breakfast', 'lunch', 'dinner', 'beverage'] },
-            { type: 'input', name: 'price', message: 'Enter new menu item price:' },
-            { type: 'list', name: 'availability_status', message: 'Select new availability status:', choices: ['available', 'unavailable'] },
-        ]);
+        let updatedItem = {}
 
-        const updatedItem: MenuItem = {
-            name: answers.name,
-            description: answers.description,
-            category: answers.category,
-            price: parseFloat(answers.price),
-            availability_status: answers.availability_status,
-        };
+        switch (choice) {
+            case 'itemName':
+                const { name } = await inquirer.prompt([
+                    { type: 'input', name: 'name', message: 'Enter new menu item name:' },
+                ]);
+                updatedItem = { name }
+                break;
+            case 'description':
+                const { description } = await inquirer.prompt([
+                    { type: 'input', name: 'description', message: 'Enter new menu item description:' },
+                ]);
+                updatedItem = { description }
+                break;
+            case 'category':
+                const { category } = await inquirer.prompt([
+                    { type: 'list', name: 'category', message: 'Select new menu item category:', choices: ['breakfast', 'lunch', 'dinner', 'beverage'] },
+                ]);
+                updatedItem = { category }
+                break;
+            case 'price':
+                const { price } = await inquirer.prompt([
+                    { type: 'input', name: 'price', message: 'Enter new menu item price:' },
+                ]);
+                updatedItem = { price }
+                break;
+            case 'availability_status':
+
+                const { availability_status } = await inquirer.prompt([
+                    { type: 'list', name: 'availability_status', message: 'Select new availability status:', choices: ['available', 'unavailable'] },
+                ]);
+                updatedItem = { availability_status }
+                break;
+            default:
+                console.log('Invalid choice.');
+        }
 
         try {
             const menuItem = await menuItemService.updateMenuItem(+id, updatedItem);
-            console.log('Menu item updated successfully:', menuItem);
+            console.log('Menu item updated successfully');
         } catch (error: any) {
             console.error('Failed to update menu item:', error.message);
         }

@@ -58,15 +58,6 @@ class EmployeeCommands {
                 console.log('Unknown command');
         }
 
-        console.log('before displayMenu');
-
-        const employeeCommands = new EmployeeCommands()
-
-        employeeCommands.displayMenu(io, user)
-
-        console.log('after displayMenu');
-
-
     }
 
     async viewMenu() {

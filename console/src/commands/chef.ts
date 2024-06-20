@@ -37,8 +37,6 @@ class ChefCommands {
                 console.log('Invalid command');
                 break;
         }
-
-        await this.displayMenu(io);
     };
 
     proposeDailyMenu = async (io:Socket) => {
