@@ -4,20 +4,18 @@ import User from "./user";
 
 interface NotificationAttributes {
     notification_id: number;
-    user_id: number;
     notification_type: 'new_menu' | 'item_added' | 'item_status_change';
     notification_data: object;
-    notification_timestamp: Date;
+    notification_timestamp: string;
 }
 
 interface NotificationCreationAttributes extends Optional<NotificationAttributes, "notification_id"> {}
 
 class Notification extends Model<NotificationAttributes, NotificationCreationAttributes> implements NotificationAttributes {
     public notification_id!: number;
-    public user_id!: number;
     public notification_type!: 'new_menu' | 'item_added' | 'item_status_change';
     public notification_data!: object;
-    public notification_timestamp!: Date;
+    public notification_timestamp!: string;
 }
 
 Notification.init(
@@ -26,14 +24,6 @@ Notification.init(
             type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true,
-        },
-        user_id: {
-            type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
-            references: {
-                model: User,
-                key: 'id',
-            },
         },
         notification_type: {
             type: DataTypes.ENUM('new_menu', 'item_added', 'item_status_change'),
@@ -44,9 +34,8 @@ Notification.init(
             allowNull: false,
         },
         notification_timestamp: {
-            type: DataTypes.DATE,
+            type: DataTypes.STRING(128),
             allowNull: false,
-            defaultValue: DataTypes.NOW,
         },
     },
     {
@@ -54,9 +43,5 @@ Notification.init(
         sequelize,
     }
 );
-
-// Setting up the associations
-User.hasMany(Notification, { foreignKey: 'user_id' });
-Notification.belongsTo(User, { foreignKey: 'user_id' });
 
 export default Notification;

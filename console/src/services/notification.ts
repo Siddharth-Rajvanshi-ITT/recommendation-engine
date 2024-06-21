@@ -50,6 +50,20 @@ class NotificationService {
         });
     }
 
+    public async getNotificationByDate(date: string): Promise<Notification> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getNotificationByDate', { date });
+
+            this.socket.on('getNotificationByDateSuccess', (data: Notification) => {
+                resolve(data);
+            });
+
+            this.socket.on('getNotificationByDateError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch notification'));
+            });
+        });
+    }
+
     public async updateNotification(id: number, notification: Notification): Promise<Notification> {
         return new Promise((resolve, reject) => {
             this.socket.emit('updateNotification', { id, notification });

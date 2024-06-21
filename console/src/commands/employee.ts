@@ -37,22 +37,18 @@ class EmployeeCommands {
         switch (answer.command) {
             case 'viewMenu':
                 await this.viewMenu();
-                console.log('after viewMenu');
                 break;
             case 'giveFeedback':
                 await this.giveFeedback();
-                console.log('after giveFeedback');
                 break;
-            case 'viewNotifications': 
-                await this.viewNotifications(parseInt(user.id));
-                console.log('after viewNotifications');
+            case 'viewNotifications':
+                await this.viewNotifications();
                 break;
             case 'chooseItemsForUpcomingMeal':
                 await this.chooseItemsForUpcomingMeal();
-                console.log('after chooseItemsForUpcomingMeal');
                 break;
-            case 'exit':  console.log('exiting');
-            return;
+            case 'exit': console.log('exiting');
+                return;
 
             default:
                 console.log('Unknown command');
@@ -75,7 +71,7 @@ class EmployeeCommands {
     }
 
     async giveFeedback() {
-        
+
         try {
             const answers = await inquirer.prompt([
                 { type: 'input', name: 'item_id', message: 'Enter the ID of the menu item:' },
@@ -99,13 +95,34 @@ class EmployeeCommands {
         }
     }
 
-    async viewNotifications(user_id: number) {
+    async viewNotifications() {
         try {
-            const notifications = await notificationService.getNotificationById(user_id) as any;
+            const date = new Date();
+
+            const newDate = date.toISOString().split('T')[0]
+
+            console.log('newDate', newDate)
+
+            const notifications = await notificationService.getNotificationByDate(newDate) as any;
+            
+            const rolledOutItems = await Promise.all(notifications.map(async (notification: Notification) => {
+                const menuItems = await menuItemService.getMenuItemByIds(notification.notification_data);
+                return {
+                    menuItems
+                }
+            }))
+
+            if(rolledOutItems.length === 0) {
+                console.log('No notifications found');
+                return;
+            }
+            
             console.log('--- Notifications ---');
-            notifications.forEach((notification: Notification) => {
-                console.log(`Type: ${notification.notification_type}, Data: ${JSON.stringify(notification.notification_data)}, Timestamp: ${notification.notification_timestamp}`);
+            rolledOutItems.forEach(items => {
+                // console.log(`Notification ID: ${items.notification_id}, Type: ${notification.notification_type}`);
+                console.table(items.menuItems);
             });
+
         } catch (error: any) {
             console.error('Error fetching notifications:', error.message);
         }

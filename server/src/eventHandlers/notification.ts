@@ -5,7 +5,7 @@ const notificationSocketHandler = new NotificationSocketHandler();
 
 
 export default class NotificationEventHandler {
-    socket
+    private socket
 
     constructor(socket: Socket) {
         this.socket = socket
@@ -13,6 +13,7 @@ export default class NotificationEventHandler {
 
     listen(){
         this.socket.on("createNotification", async (data) => {
+            console.log("Data: ", data)
             await notificationSocketHandler.createNotification(this.socket, data);
         });
         this.socket.on("getNotifications", async () => {
@@ -20,6 +21,10 @@ export default class NotificationEventHandler {
         });
         this.socket.on("getNotificationById", async (data) => {
             await notificationSocketHandler.getNotificationById(this.socket, data);
+        });
+        this.socket.on("getNotificationByDate", async (data) => {
+            console.log("Date: ", data)
+            await notificationSocketHandler.getNotificationByDate(this.socket, data);
         });
         this.socket.on("updateNotification", async (data) => {
             await notificationSocketHandler.updateNotification(this.socket, data);

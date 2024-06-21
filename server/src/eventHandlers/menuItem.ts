@@ -21,6 +21,9 @@ export default class MenuItemEventHandler {
         this.socket.on("getMenuItemById", async (data) => {
             await menuItemSocketHandler.getMenuItemById(this.socket, data);
         });
+        this.socket.on("getMenuItemByIds", async (data) => {
+            await menuItemSocketHandler.getMenuItemByIds(this.socket, data);
+        });
         this.socket.on("updateMenuItem", async (data) => {
             await menuItemSocketHandler.updateMenuItem(this.socket, data);
         });

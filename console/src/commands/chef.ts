@@ -41,13 +41,7 @@ class ChefCommands {
     };
 
     proposeDailyMenu = async (io: Socket) => {
-        const { menu_date, menu_type, chef_id } = await inquirer.prompt([
-            {
-                type: 'input',
-                name: 'menu_date',
-                message: 'Enter menu date (DD-MM-YYYY):',
-                validate: (input) => isValidDateFormat(input)
-            },
+        const { menu_type } = await inquirer.prompt([
             {
                 type: 'list',
                 name: 'menu_type',
@@ -62,7 +56,7 @@ class ChefCommands {
 
         const choices = menuItems.map((item: any) => ({
             name: `${item.name} - ${item.price}`,
-            value: item.item_id.toString()
+            value: item.item_id
         }));
 
         const {selectedItems} = await inquirer.prompt([
@@ -72,7 +66,7 @@ class ChefCommands {
                 message: 'Select up to 3 items:',
                 choices: choices,
                 validate: function (answer) {
-                    if (answer.length > 5 ) {
+                    if (answer.length > 3 ) {
                         return 'You can select up to 3 items only.';
                     }
                     if (answer.length < 1) {
@@ -83,12 +77,14 @@ class ChefCommands {
             }
         ])
 
-        console.log('Selected items:', selectedItems)
+        const menu_date = new Date();
 
+        const newDate = menu_date.toISOString().split('T')[0]
 
+        console.log('Selected items:', {notification_type: 'new_menu',notification_data:selectedItems, notification_timestamp:newDate})
 
-        io.emit('proposeDailyMenu', { menu_date, menu_type });
-        io.on('proposeDailyMenuResponse', (response) => {
+        io.emit('createNotification', {notification_type: 'new_menu',notification_data:selectedItems, notification_timestamp:newDate});
+        io.on('createNotificationSuccess', (response) => {
             console.log('Daily menu proposed successfully:', response);
         });
     };
