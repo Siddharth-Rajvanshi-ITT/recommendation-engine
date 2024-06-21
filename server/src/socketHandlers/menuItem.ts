@@ -37,6 +37,17 @@ class MenuItemController {
         }
     };
 
+    public getMenuItemByIds = async (socket: Socket, data: any): Promise<void> => {
+        const { item_ids } = data;
+        try {
+            const menuItem = await this.menuItemService.getMenuItemByIds(item_ids);
+            socket.emit('getMenuItemByIdsSuccess', menuItem);
+        } catch (error) {
+            socket.emit('getMenuItemByIdsError', { error: error.message });
+        }
+    };
+
+
     public updateMenuItem = async (socket: Socket, data: any): Promise<void> => {
         const id = data.id;
         const { name, description, category, price, availability_status } = data.menuItem;

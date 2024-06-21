@@ -1,10 +1,9 @@
 import Notification from "../models/notifications";
 
 class NotificationService {
-    async createNotification(user_id: number, notification_type: 'new_menu' | 'item_added' | 'item_status_change', notification_data: any, notification_timestamp: Date) {
+    async createNotification(notification_type: 'new_menu' | 'item_added' | 'item_status_change', notification_data: any, notification_timestamp: string) {
         try {
             const notification = await Notification.create({
-                user_id,
                 notification_type,
                 notification_data,
                 notification_timestamp,
@@ -36,13 +35,24 @@ class NotificationService {
         }
     }
 
-    async updateNotification(notification_id: number, user_id: number, notification_type: 'new_menu' | 'item_added' | 'item_status_change', notification_data: any, notification_timestamp: Date) {
+    async getNotificationByDate(notification_timestamp: string) {
+        try {
+            const notification = await Notification.findAll({ where: { notification_timestamp }});
+            if (!notification) {
+                throw new Error("Notification not found");
+            }
+            return notification;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async updateNotification(notification_id: number, user_id: number, notification_type: 'new_menu' | 'item_added' | 'item_status_change', notification_data: any, notification_timestamp: string) {
         try {
             const notification = await Notification.findByPk(notification_id);
             if (!notification) {
                 throw new Error("Notification not found");
             }
-            notification.user_id = user_id;
             notification.notification_type = notification_type;
             notification.notification_data = notification_data;
             notification.notification_timestamp = notification_timestamp;
