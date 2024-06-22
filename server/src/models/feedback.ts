@@ -10,6 +10,7 @@ interface FeedbackAttributes {
     rating: number;
     comment: string;
     feedback_date: Date;
+    sentiment_score: number;
 }
 
 interface FeedbackCreationAttributes extends Optional<FeedbackAttributes, "feedback_id"> {}
@@ -21,6 +22,7 @@ class Feedback extends Model<FeedbackAttributes, FeedbackCreationAttributes> imp
     public rating!: number;
     public comment!: string;
     public feedback_date!: Date;
+    public sentiment_score: number;
 }
 
 Feedback.init(
@@ -62,6 +64,13 @@ Feedback.init(
             type: DataTypes.DATE,
             allowNull: false,
             defaultValue: DataTypes.NOW,
+        },
+        sentiment_score: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            validate: {
+                min: 1,
+                max: 100,
+            },
         },
     },
     {
