@@ -1,16 +1,17 @@
 import { Socket } from 'socket.io';
 import MenuItemService from '../services/menuItem';
+import RecommendationEngineService from 'src/services/recommendationEngine';
 
 class RecommendationController {
-    private menuItemService: MenuItemService;
+    private recommendationEngineService: RecommendationEngineService;
 
     constructor() {
-        this.menuItemService = new MenuItemService();
+        this.recommendationEngineService = new RecommendationEngineService();
     }
 
-    public getMenuItems = async (socket: Socket): Promise<void> => {
+    public async getRecommendedMenuItems(socket: Socket, menu_type) {
         try {
-            const menuItems = await this.menuItemService.getMenuItems();
+            const menuItems = await this.recommendationEngineService.getRecommendations(menu_type);
             socket.emit('getRecommendedItemsSuccess', menuItems);
         } catch (error) {
             socket.emit('getRecommendedItemsError', { error: error.message });
