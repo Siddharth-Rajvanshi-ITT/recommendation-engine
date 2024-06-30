@@ -42,7 +42,6 @@ class NotificationController {
 
     public getNotificationByDate = async (socket: Socket, data: any): Promise<void> => {
         const { date } = data;
-        // console.log('getNotificationByDate', date)
         try {
             const notification = await this.notificationService.getNotificationByDate(date);
             socket.emit('getNotificationByDateSuccess', notification);

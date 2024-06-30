@@ -107,22 +107,16 @@ class EmployeeCommands {
 
             console.log('notifications', notifications)
 
-            const rolledOutItems = await Promise.all(notifications.map(async (notification: Notification) => {
-                let menuItems = await menuItemService.getMenuItemByIds(notification.notification_data);
-                console.log('menuItems', menuItems, notification.notification_data)
-                return menuItems.map((menuItem) => {
+            const rolledOutItems = notifications.map((notification: Notification) => {
+                return notification.notification_data.map((menuItem: any) => {
                     return {
-                        item_id: menuItem.item_id,
                         name: menuItem.name,
                         description: menuItem.description,
                         category: menuItem.category,
                         price: menuItem.price,
-                        availability_status: menuItem.availability_status,
                     }
                 })
-
-
-            }))
+            })
 
             console.log('rolledOutItems', rolledOutItems)
 
@@ -132,8 +126,8 @@ class EmployeeCommands {
             }
 
             console.log('--- Notifications ---');
-            rolledOutItems.forEach(items => {
-                // console.log(`Notification ID: ${items.notification_id}, Type: ${notification.notification_type}`);
+            rolledOutItems.forEach((items:any) => {
+                console.log(`Tomorrow's rolled out items for ${items[0]?.category}:`);
                 console.table(items);
             });
 
