@@ -4,16 +4,16 @@ import User from "./user";
 
 interface NotificationAttributes {
     notification_id: number;
-    notification_type: 'new_menu' | 'item_added' | 'item_status_change';
+    notification_type: 'new_breakfast_menu' | 'new_lunch_menu' | 'new_dinner_menu' | 'item_added' | 'item_status_change';
     notification_data: object;
     notification_timestamp: string;
 }
 
-interface NotificationCreationAttributes extends Optional<NotificationAttributes, "notification_id"> {}
+interface NotificationCreationAttributes extends Optional<NotificationAttributes, "notification_id"> { }
 
 class Notification extends Model<NotificationAttributes, NotificationCreationAttributes> implements NotificationAttributes {
     public notification_id!: number;
-    public notification_type!: 'new_menu' | 'item_added' | 'item_status_change';
+    public notification_type!: 'new_breakfast_menu' | 'new_lunch_menu' | 'new_dinner_menu' | 'item_added' | 'item_status_change';
     public notification_data!: object;
     public notification_timestamp!: string;
 }
@@ -26,7 +26,7 @@ Notification.init(
             primaryKey: true,
         },
         notification_type: {
-            type: DataTypes.ENUM('new_menu', 'item_added', 'item_status_change'),
+            type: DataTypes.ENUM('new_breakfast_menu', 'new_lunch_menu', 'new_dinner_menu', 'item_added', 'item_status_change'),
             allowNull: false,
         },
         notification_data: {

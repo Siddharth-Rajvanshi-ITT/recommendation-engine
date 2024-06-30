@@ -54,8 +54,6 @@ class MenuItemService {
                 throw new Error("Menu item not found");
             }
 
-            // console.log(name, description, category, price, availability_status)
-
             if (name){
                 menuItem.name = name;
             }

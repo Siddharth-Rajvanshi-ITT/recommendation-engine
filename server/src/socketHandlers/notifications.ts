@@ -10,10 +10,13 @@ class NotificationController {
 
     public createNotification = async (socket: Socket, data: any): Promise<void> => {
         const { notification_type, notification_data, notification_timestamp } = data;
+
+        console.log('createNotification', notification_type, notification_data, notification_timestamp)
         try {
             const notification = await this.notificationService.createNotification(notification_type, notification_data, notification_timestamp);
             socket.emit('createNotificationSuccess', notification);
         } catch (error) {
+            console.log(error)
             socket.emit('createNotificationError', { error: error.message });
         }
     };
@@ -39,6 +42,7 @@ class NotificationController {
 
     public getNotificationByDate = async (socket: Socket, data: any): Promise<void> => {
         const { date } = data;
+        // console.log('getNotificationByDate', date)
         try {
             const notification = await this.notificationService.getNotificationByDate(date);
             socket.emit('getNotificationByDateSuccess', notification);
