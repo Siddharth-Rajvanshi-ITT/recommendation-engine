@@ -63,7 +63,7 @@ class EmployeeCommands {
             const menuItems: MenuItem[] = await menuItemService.getMenuItems();
             console.log('--- Menu ---');
             menuItems.forEach(item => {
-                console.log(`ID: ${item.id}, Name: ${item.name}, Description: ${item.description}, Category: ${item.category}, Price: ${item.price}, Availability: ${item.availability_status}`);
+                console.log(`ID: ${item.item_id}, Name: ${item.name}, Description: ${item.description}, Category: ${item.category}, Price: ${item.price}, Availability: ${item.availability_status}`);
             });
         } catch (error: any) {
             console.error('Error fetching menu items:', error.message);
@@ -104,23 +104,37 @@ class EmployeeCommands {
             console.log('newDate', newDate)
 
             const notifications = await notificationService.getNotificationByDate(newDate) as any;
-            
+
+            console.log('notifications', notifications)
+
             const rolledOutItems = await Promise.all(notifications.map(async (notification: Notification) => {
-                const menuItems = await menuItemService.getMenuItemByIds(notification.notification_data);
-                return {
-                    menuItems
-                }
+                let menuItems = await menuItemService.getMenuItemByIds(notification.notification_data);
+                console.log('menuItems', menuItems, notification.notification_data)
+                return menuItems.map((menuItem) => {
+                    return {
+                        item_id: menuItem.item_id,
+                        name: menuItem.name,
+                        description: menuItem.description,
+                        category: menuItem.category,
+                        price: menuItem.price,
+                        availability_status: menuItem.availability_status,
+                    }
+                })
+
+
             }))
 
-            if(rolledOutItems.length === 0) {
+            console.log('rolledOutItems', rolledOutItems)
+
+            if (!rolledOutItems.length) {
                 console.log('No notifications found');
                 return;
             }
-            
+
             console.log('--- Notifications ---');
             rolledOutItems.forEach(items => {
                 // console.log(`Notification ID: ${items.notification_id}, Type: ${notification.notification_type}`);
-                console.table(items.menuItems);
+                console.table(items);
             });
 
         } catch (error: any) {
@@ -133,7 +147,7 @@ class EmployeeCommands {
             const menuItems: MenuItem[] = await menuItemService.getMenuItems();
             const choices = menuItems.map(item => ({
                 name: `${item.name} (Category: ${item.category}, Price: ${item.price})`,
-                value: item.id,
+                value: item.item_id,
             }));
 
             const answers = await inquirer.prompt([

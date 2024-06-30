@@ -50,11 +50,11 @@ class MenuItemService {
         });
     }
 
-    public async getMenuItemByIds(item_ids: number): Promise<MenuItem> {
+    public async getMenuItemByIds(item_ids: number): Promise<MenuItem[]> {
         return new Promise((resolve, reject) => {
             this.socket.emit('getMenuItemByIds', { item_ids });
 
-            this.socket.on('getMenuItemByIdsSuccess', (data: MenuItem) => {
+            this.socket.on('getMenuItemByIdsSuccess', (data: MenuItem[]) => {
                 resolve(data);
             });
 

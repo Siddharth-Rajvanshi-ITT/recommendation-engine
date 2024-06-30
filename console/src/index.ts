@@ -13,6 +13,11 @@ const employeeCommands = new EmployeeCommands();
 const chefCommands = new ChefCommands();
 const adminCommands = new AdminCommands();
 
+IO.on('connect', () => {
+    console.log('Connected to server');
+    main();
+})
+
 
 async function main() {
     console.log("Welcome to the Food Recommendation System!");
@@ -71,7 +76,7 @@ async function main() {
                         console.log('Invalid user type.');
                 }
             
-            process.exit(0);
+            // process.exit(0);
 
         } else {
             console.log('Login failed. Please check your credentials.');
@@ -80,5 +85,3 @@ async function main() {
         console.error('Error logging in:', error.message);
     }
 }
-
-main();

@@ -1,4 +1,6 @@
+import { where } from "sequelize";
 import Feedback from "../models/feedback";
+import MenuItem from "src/models/menuItem";
 
 class FeedbackService {
     async createFeedback(item_id: number, user_id: number, rating: number, comment: string, feedback_date: Date) {
@@ -27,6 +29,26 @@ class FeedbackService {
             }
             return feedback;
         } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getFeedbacksByMenuType(menu_type: string) {
+        try {
+            const feedbacks = await Feedback.findAll({
+                include: [{
+                    model: MenuItem,
+                    where: { category: menu_type },
+                    required: true
+                }]
+            });
+
+            if (!feedbacks.length) {
+                throw new Error("Feedback not found");
+            }
+
+            return feedbacks;
+        } catch (error: any) {
             throw new Error(error.message);
         }
     }
