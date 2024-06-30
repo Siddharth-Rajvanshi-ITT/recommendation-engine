@@ -12,8 +12,9 @@ export default class RecommendationEventHandler {
     }
 
     listen(){
-        this.socket.on("getRecommendedItems", async () => {
-            await recommendationSocketHandler.getMenuItems(this.socket);
+        this.socket.on("getRecommendedItems", async (data) => {
+            const { menu_type } = data
+            await recommendationSocketHandler.getRecommendedMenuItems(this.socket, menu_type);
         });
     }
 }
