@@ -53,7 +53,7 @@ class NotificationController {
     public updateNotification = async (socket: Socket, data: any): Promise<void> => {
         const { id, user_id, notification_type, notification_data, notification_timestamp } = data;
         try {
-            const notification = await this.notificationService.updateNotification(+id, user_id, notification_type, notification_data, notification_timestamp);
+            const notification = await this.notificationService.updateNotification(+id, notification_type, notification_data, notification_timestamp);
             socket.emit('updateNotificationSuccess', notification);
         } catch (error) {
             socket.emit('updateNotificationError', { error: error.message });

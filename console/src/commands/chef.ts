@@ -49,10 +49,7 @@ class ChefCommands {
         if (!alreadyExists.create && !alreadyExists.modify) return;
 
         const selectedItems = await this.promptMenuItems(io, menu_type);
-
-        // console.log('Selected items:', selectedItems);
-        // console.log('Selected items:', { notification_type: 'new_menu', notification_data: selectedItems, notification_timestamp: newDate });
-
+        
         if(alreadyExists.create){
             console.log('Creating daily rollout...');
             io.emit('createDailyRollout', { date: newDate, menu_type });

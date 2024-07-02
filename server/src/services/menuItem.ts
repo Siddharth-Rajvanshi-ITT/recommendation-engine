@@ -47,6 +47,22 @@ class MenuItemService {
         }
     }
 
+    async getRolledOutMenuItems(item_ids: number[]) {
+        try {
+            const menuItems = await MenuItem.findAll({
+                where: {
+                    item_id: item_ids
+                }
+            });
+            if (!menuItems) {
+                throw new Error("Menu item not found");
+            }
+            return menuItems;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     async updateMenuItem(item_id: number, name: string, description: string, category: 'breakfast' | 'lunch' | 'dinner', price: number, availability_status: 'available' | 'unavailable') {
         try {
             const menuItem = await MenuItem.findByPk(item_id);
