@@ -50,11 +50,11 @@ class NotificationService {
         });
     }
 
-    public async getNotificationByDate(date: string): Promise<Notification> {
+    public async getNotificationByDate(date: string): Promise<Notification[]> {
         return new Promise((resolve, reject) => {
             this.socket.emit('getNotificationByDate', { date });
 
-            this.socket.on('getNotificationByDateSuccess', (data: Notification) => {
+            this.socket.on('getNotificationByDateSuccess', (data: Notification[]) => {
                 resolve(data);
             });
 

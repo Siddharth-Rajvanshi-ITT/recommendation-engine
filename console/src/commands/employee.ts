@@ -61,10 +61,19 @@ class EmployeeCommands {
         console.log('Inside viewMenu')
         try {
             const menuItems: MenuItem[] = await menuItemService.getMenuItems();
-            console.log('--- Menu ---');
-            menuItems.forEach(item => {
-                console.log(`ID: ${item.item_id}, Name: ${item.name}, Description: ${item.description}, Category: ${item.category}, Price: ${item.price}, Availability: ${item.availability_status}`);
+            const displayableMenuItems = menuItems.map(item => {
+                return {
+                    ID: item.item_id,
+                    Name: item.name,
+                    Description: item.description,
+                    Category: item.category,
+                    Price: item.price,
+                    Availability: item.availability_status,
+                }
             });
+
+            console.log('--- Menu ---');
+            console.table(displayableMenuItems)
         } catch (error: any) {
             console.error('Error fetching menu items:', error.message);
         }
@@ -95,67 +104,128 @@ class EmployeeCommands {
         }
     }
 
-    async viewNotifications() {
+    public async viewNotifications(): Promise<void> {
         try {
-            const date = new Date();
+            const currentDate = this.getCurrentDate();
+            const notifications = await this.fetchNotifications(currentDate);
+            const rolledOutItems = this.processNotifications(notifications);
 
-            const newDate = date.toISOString().split('T')[0]
+            if (rolledOutItems.length === 0) return;
 
-            console.log('newDate', newDate)
+            this.displayNotifications(rolledOutItems);
 
-            const notifications = await notificationService.getNotificationByDate(newDate) as any;
+        } catch (error: any) {
+            console.error(error.message);
+        }
+    }
 
-            console.log('notifications', notifications)
+    private getCurrentDate(): string {
+        const date = new Date();
+        return date.toISOString().split('T')[0];
+    }
 
-            const rolledOutItems = notifications.map((notification: Notification) => {
-                return notification.notification_data.map((menuItem: any) => {
-                    return {
+    private async fetchNotifications(date: string): Promise<Notification[]> {
+        try {
+            const notifications = await notificationService.getNotificationByDate(date);
+            if (!notifications || notifications.length === 0) {
+                console.log('No notifications found');
+                return [];
+            }
+            return notifications as any;
+        } catch (error: any) {
+            throw new Error('Error fetching notifications: ' + error.message);
+        }
+    }
+
+    private processNotifications(notifications: Notification[]): any[] {
+        return notifications.map((notification: Notification) => {
+            return notification.notification_data.map((menuItem: any) => {
+                return {
+                    notification_type: notification.notification_type,
+                    item_details: {
+                        id: menuItem.item_id,
                         name: menuItem.name,
                         description: menuItem.description,
                         category: menuItem.category,
                         price: menuItem.price,
                     }
-                })
-            })
+                }
+            });
+        });
+    }
 
-            console.log('rolledOutItems', rolledOutItems)
+    private displayNotifications(rolledOutItems: any[]): void {
+        console.log('--- Notifications ---');
+        rolledOutItems.forEach((items: any) => {
+            if (items.length) {
+                console.log(`Tomorrow's rolled out items for ${items[0]?.item_details.category}:`);
+                console.table(items.map((item: any) => item.item_details));
+            }
+        });
+    }
 
-            if (!rolledOutItems.length) {
-                console.log('No notifications found');
+    public async chooseItemsForUpcomingMeal(): Promise<void> {
+        try {
+            const currentDate = this.getCurrentDate();
+            const notifications = await this.fetchNotifications(currentDate);
+            const rolledOutItems = this.processNotifications(notifications);
+
+            if (rolledOutItems.length === 0) {
+                console.log('No items rolled out for tomorrow. Please try again later.');
                 return;
             }
 
-            console.log('--- Notifications ---');
-            rolledOutItems.forEach((items:any) => {
-                console.log(`Tomorrow's rolled out items for ${items[0]?.category}:`);
-                console.table(items);
-            });
+            console.log('Rolled out items for tomorrow: ', rolledOutItems);
+            this.displayNotifications(rolledOutItems);
 
-        } catch (error: any) {
-            console.error('Error fetching notifications:', error.message);
-        }
-    }
+            const selectedCategory = await this.getCategoryChoice(rolledOutItems);
+            const filteredItems = this.filterItemsByCategory(rolledOutItems, selectedCategory);
+            const selectedItems = await this.promptUserForItems(filteredItems);
 
-    async chooseItemsForUpcomingMeal() {
-        try {
-            const menuItems: MenuItem[] = await menuItemService.getMenuItems();
-            const choices = menuItems.map(item => ({
-                name: `${item.name} (Category: ${item.category}, Price: ${item.price})`,
-                value: item.item_id,
-            }));
-
-            const answers = await inquirer.prompt([
-                { type: 'checkbox', name: 'selectedItems', message: 'Select items for the upcoming meal:', choices },
-                { type: 'input', name: 'user_id', message: 'Enter your user ID:' },
-            ]);
-
-            const selectedItems = answers.selectedItems as number[];
-            const user_id = parseInt(answers.user_id);
-
-            console.log('Your meal choices have been recorded.');
+            console.log('Your meal choices have been recorded:', selectedItems);
         } catch (error: any) {
             console.error('Error selecting items for the upcoming meal:', error.message);
         }
+    }
+
+    private async getCategoryChoice(rolledOutItems: any[]): Promise<string> {
+        const categoryChoice = rolledOutItems.map(rolledOutItem => {
+            const category = rolledOutItem[0].notification_type === 'new_breakfast_menu' ? 'breakfast' : rolledOutItem[0].notification_type === 'new_lunch_menu' ? 'lunch' : 'dinner';
+            return {
+                name: `${category}`,
+                value: category,
+            };
+        });
+
+        const { selectedCategory } = await inquirer.prompt([
+            { type: 'list', name: 'selectedCategory', message: 'Select category to choose item from:', choices: categoryChoice },
+        ]);
+
+        return selectedCategory;
+    }
+
+    private filterItemsByCategory(rolledOutItems: any[], selectedCategory: string): any[] {
+        return rolledOutItems
+            .flat()
+            .filter(item => {
+                const category = item.notification_type === 'new_breakfast_menu' ? 'breakfast' : item.notification_type === 'new_lunch_menu' ? 'lunch' : 'dinner';
+                return category === selectedCategory;
+            })
+            .map(item => item.item_details);
+    }
+
+    private async promptUserForItems(filteredItems: any[]): Promise<number[]> {
+        const choices = filteredItems.map(item => {
+            return {
+            name: `${item.name} (Category: ${item.category}, Price: ${item.price})`,
+            value: item,
+        }});
+
+        const { selectedItem } = await inquirer.prompt([
+            { type: 'list', name: 'selectedItem', message: 'Select items for the upcoming meal:', choices },
+        ]);
+
+        return selectedItem;
     }
 
 

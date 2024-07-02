@@ -1,5 +1,9 @@
 import MenuItem from "src/models/menuItem";
 import Notification from "../models/notifications";
+import MenuItemService from "./menuItem";
+
+const menuItemService = new MenuItemService()
+
 
 class NotificationService {
     async createNotification(notification_type: 'new_breakfast_menu' | 'new_lunch_menu' | 'new_dinner_menu' | 'item_added' | 'item_status_change', notification_data: any, notification_timestamp: string) {
@@ -46,12 +50,7 @@ class NotificationService {
 
         const menuItemIds = notifications.flatMap(notification => notification.notification_data as number[]);
 
-        const menuItems = await MenuItem.findAll({
-            where: {
-                item_id: menuItemIds
-            },
-            attributes: ['item_id', 'name', 'description', 'category', 'price', 'availability_status']
-        });
+        const menuItems = await menuItemService.getMenuItemByIds(menuItemIds);
 
         const menuItemMap = new Map(menuItems.map(item => [item.item_id, item]));
 
@@ -69,7 +68,7 @@ class NotificationService {
     }
 }
 
-    async updateNotification(notification_id: number, user_id: number, notification_type: 'new_breakfast_menu' | 'new_lunch_menu' | 'new_dinner_menu' | 'item_added' | 'item_status_change', notification_data: any, notification_timestamp: string) {
+    async updateNotification(notification_id: number, notification_type: 'new_breakfast_menu' | 'new_lunch_menu' | 'new_dinner_menu' | 'item_added' | 'item_status_change', notification_data: any, notification_timestamp: string) {
     try {
         const notification = await Notification.findByPk(notification_id);
         if (!notification) {
