@@ -48,7 +48,7 @@ async function main() {
         {
             type: 'input',
             name: 'password',
-            message: 'Enter your password:',
+            message: 'Enter your username:',
         },
     ]);
 

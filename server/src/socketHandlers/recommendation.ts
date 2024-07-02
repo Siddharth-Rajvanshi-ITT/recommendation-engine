@@ -1,5 +1,4 @@
 import { Socket } from 'socket.io';
-import MenuItemService from '../services/menuItem';
 import RecommendationEngineService from 'src/services/recommendationEngine';
 
 class RecommendationController {
