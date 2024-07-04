@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import RecommendationSocketHandler from "../socketHandlers/recommendation";
+import RecommendationSocketHandler from "../controllers/recommendation";
 
 const recommendationSocketHandler = new RecommendationSocketHandler();
 

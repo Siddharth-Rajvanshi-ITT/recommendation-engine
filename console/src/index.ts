@@ -9,9 +9,6 @@ import { io } from 'socket.io-client';
 const IO = io('http://localhost:8080');
 
 const authService = new AuthService(IO);
-const employeeCommands = new EmployeeCommands();
-const chefCommands = new ChefCommands();
-const adminCommands = new AdminCommands();
 
 IO.on('connect', () => {
     console.log('Connected to server');
@@ -37,7 +34,7 @@ async function main() {
         },
     ]);
 
-    if(userType === 'exit') process.exit(0);
+    if (userType === 'exit') process.exit(0);
 
     const { employeeId, password } = await inquirer.prompt([
         {
@@ -55,27 +52,27 @@ async function main() {
     try {
         const user = await authService.login(employeeId, password);
 
-        if(user.role != userType){
+        if (user.role != userType) {
             console.log('Invalid Credentials')
             return;
         }
 
         if (user) {
             console.log(`Welcome, ${user.name}!`);
-                switch (userType) {
-                    case UserType.ADMIN:
-                        await adminCommands.displayMenu(IO);
-                        break;
-                    case UserType.CHEF:
-                        await chefCommands.displayMenu(IO);
-                        break;
-                    case UserType.EMPLOYEE:
-                        await employeeCommands.displayMenu(IO, user);
-                        break;                
-                    default:
-                        console.log('Invalid user type.');
-                }
-            
+            switch (userType) {
+                case UserType.ADMIN:
+                    await AdminCommands.displayMenu(IO);
+                    break;
+                case UserType.CHEF:
+                    await ChefCommands.displayMenu(IO);
+                    break;
+                case UserType.EMPLOYEE:
+                    await EmployeeCommands.displayMenu(IO, user);
+                    break;
+                default:
+                    console.log('Invalid user type.');
+            }
+
             // process.exit(0);
 
         } else {
