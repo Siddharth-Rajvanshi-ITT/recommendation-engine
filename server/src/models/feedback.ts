@@ -79,7 +79,6 @@ Feedback.init(
     }
 );
 
-// Setting up the associations
 MenuItem.hasMany(Feedback, { foreignKey: 'item_id' });
 User.hasMany(Feedback, { foreignKey: 'user_id' });
 Feedback.belongsTo(MenuItem, { foreignKey: 'item_id' });

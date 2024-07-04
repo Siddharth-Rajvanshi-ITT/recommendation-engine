@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import DailyRolloutSocketHandler from "../socketHandlers/dailyRollout";
+import DailyRolloutSocketHandler from "../controllers/dailyRollout";
 
 const dailyRolloutSocketHandler = new DailyRolloutSocketHandler();
 
@@ -21,7 +21,6 @@ export default class DailyRolloutEventHandler {
             await dailyRolloutSocketHandler.getDailyRolloutById(this.socket, data);
         });
         this.socket.on("getDailyRolloutByDate", async (data) => {
-            // console.log('getDailyRolloutByDate', data);
             await dailyRolloutSocketHandler.getDailyRolloutByDate(this.socket, data);
         });
         this.socket.on("updateDailyRollout", async (data) => {

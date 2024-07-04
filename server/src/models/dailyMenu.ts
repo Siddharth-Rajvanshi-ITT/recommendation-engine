@@ -48,7 +48,6 @@ DailyMenu.init(
     }
 );
 
-// Setting up the associations
 User.hasMany(DailyMenu, { foreignKey: 'chef_id' });
 DailyMenu.belongsTo(User, { foreignKey: 'chef_id' });
 

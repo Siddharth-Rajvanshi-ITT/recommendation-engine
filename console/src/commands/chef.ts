@@ -7,36 +7,46 @@ const recommendationService = new RecommendationService();
 
 class ChefCommands {
 
+    private static instance: ChefCommands;
+    private constructor() { }
+    public static getInstance(): ChefCommands {
+        if (!ChefCommands.instance) {
+            ChefCommands.instance = new ChefCommands();
+        }
+        return ChefCommands.instance;
+    }
+
     displayMenu = async (io: Socket) => {
-        const { command } = await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'command',
-                message: 'Choose an action:',
-                choices: [
-                    'Propose Daily Menu',
-                    'Generate Monthly Feedback Report',
-                    'View Feedback',
-                    'Exit'
-                ]
+        console.log('Welcome to the Chef Portal!');
+
+        while (true) {
+            const { command } = await inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'command',
+                    message: 'Choose an action:',
+                    choices: [
+                        'Propose Daily Menu',
+                        'View Feedback',
+                        'Exit'
+                    ]
+                }
+            ]);
+
+            switch (command) {
+                case 'Propose Daily Menu':
+                    await this.proposeDailyMenu(io);
+                    break;
+                case 'View Feedback':
+                    await this.viewFeedback(io);
+                    break;
+                case 'Exit': console.log('exiting');
+                process.exit(0);
+
+                default:
+                    console.log('Invalid command');
+                    break;
             }
-        ]);
-
-        switch (command) {
-            case 'Propose Daily Menu':
-                await this.proposeDailyMenu(io);
-                break;
-            case 'Generate Monthly Feedback Report':
-                await this.generateMonthlyReport(io);
-                break;
-            case 'View Feedback':
-                await this.viewFeedback(io);
-                break;
-            case 'Exit': return;
-
-            default:
-                console.log('Invalid command');
-                break;
         }
     };
 
@@ -49,49 +59,74 @@ class ChefCommands {
         if (!alreadyExists.create && !alreadyExists.modify) return;
 
         const selectedItems = await this.promptMenuItems(io, menu_type);
-        
-        if(alreadyExists.create){
+
+        if (alreadyExists.create) {
             console.log('Creating daily rollout...');
             io.emit('createDailyRollout', { date: newDate, menu_type });
-        } else if(alreadyExists.modify){
+        } else if (alreadyExists.modify) {
             console.log('Modifying daily rollout...');
             io.emit('updateDailyRollout', { date: newDate, menu_type });
         }
 
-        io.on('createDailyRolloutSuccess', (response) => {
-            io.emit('createNotification', { notification_type: `new_${menu_type}_menu`, notification_data: selectedItems, notification_timestamp: newDate });
-            console.log('Daily menu rolled out successfully:', response);
-        });
+        await this.rolloutListener(io, newDate, menu_type, selectedItems);
+        await this.notificationListener(io);
+    }
 
-        io.on('updateDailyRolloutSuccess', (response) => {
-            io.emit('createNotification', { notification_type: `new_${menu_type}_menu`, notification_data: selectedItems, notification_timestamp: newDate });
-            console.log('Daily menu updated successfully:', response);
-        });
+    private async rolloutListener(io: Socket, newDate: string, menu_type: string, selectedItems: number[]): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            io.once('createDailyRolloutSuccess', (response) => {
+                io.emit('createNotification', { notification_type: `new_${menu_type}_menu`, notification_data: selectedItems, notification_timestamp: newDate });
+                console.log('Daily menu rolled out successfully:', response);
+                resolve();
+            });
 
-        io.on('createNotificationSuccess', (response) => {
-            console.log('Notification sent successfully:', response);
-        });
+            io.once('updateDailyRolloutSuccess', (response) => {
+                io.emit('createNotification', { notification_type: `new_${menu_type}_menu`, notification_data: selectedItems, notification_timestamp: newDate });
+                console.log('Daily menu updated successfully:', response);
+                resolve();
+            });
 
-        io.on('createNotificationError', (response) => {
-            console.log('Error while sending notification:', response);
+            io.once('createDailyRolloutError', (error) => {
+                console.log('Error in rolling out daily menu:', error);
+                reject(error);
+            });
+
+            io.once('updateDailyRolloutError', (error) => {
+                console.log('Error in updating daily menu:', error);
+                reject(error);
+            });
         });
     }
 
-    private async checkExistingRollout(io: Socket, date: string, menu_type: string): Promise<{ create: boolean, modify: boolean }>{
+    private async notificationListener(io: Socket): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            io.once('createNotificationSuccess', (response) => {
+                console.log('Notification sent successfully:', response);
+                resolve();
+            });
+
+            io.once('createNotificationError', (error) => {
+                console.log('Error while sending notification:', error);
+                reject(error);
+            });
+        });
+    }
+
+    private async checkExistingRollout(io: Socket, date: string, menu_type: string): Promise<{ create: boolean, modify: boolean }> {
         return new Promise((resolve, reject) => {
             io.emit('getDailyRolloutByDate', { date });
 
             io.on('getDailyRolloutByDateSuccess', (response) => {
                 if (!response) {
-                    resolve({create: true, modify: false});
+                    resolve({ create: true, modify: false });
                 } else {
                     if ((response.breakfast && menu_type === 'breakfast') ||
                         (response.lunch && menu_type === 'lunch') ||
                         (response.dinner && menu_type === 'dinner')) {
                         console.log(`${menu_type.charAt(0).toUpperCase() + menu_type.slice(1)} already rolled out for ${date}`);
-                        resolve({create: false, modify: false});
+                        resolve({ create: false, modify: false });
                     } else {
-                        resolve({create: false, modify: true});
+                        resolve({ create: false, modify: true });
                     }
                 }
             });
@@ -111,6 +146,7 @@ class ChefCommands {
                 choices: ['breakfast', 'lunch', 'dinner']
             },
         ]);
+
         return menu_type;
     }
 
@@ -144,35 +180,6 @@ class ChefCommands {
         return selectedItems;
     }
 
-    
-
-    private generateMonthlyReport = async (io: Socket) => {
-        const { month, year, chef_id } = await inquirer.prompt([
-            {
-                type: 'input',
-                name: 'month',
-                message: 'Enter the month (MM):',
-                validate: (input) => /^\d{2}$/.test(input) && Number(input) >= 1 && Number(input) <= 12
-            },
-            {
-                type: 'input',
-                name: 'year',
-                message: 'Enter the year (YYYY):',
-                validate: (input) => /^\d{4}$/.test(input) && Number(input) > 2000
-            },
-            {
-                type: 'input',
-                name: 'chef_id',
-                message: 'Enter your chef ID:'
-            }
-        ]);
-
-        io.emit('generateMonthlyReport', { month, year, chef_id });
-        io.on('generateMonthlyReportResponse', (response) => {
-            console.log('Monthly feedback report:', response);
-        });
-    };
-
     private viewFeedback = (io: Socket) => {
         io.emit('viewFeedback');
         io.on('viewFeedbackResponse', (response) => {
@@ -181,4 +188,4 @@ class ChefCommands {
     };
 }
 
-export default ChefCommands;
+export default ChefCommands.getInstance();

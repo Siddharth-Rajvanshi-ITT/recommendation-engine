@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import AuthSocketHandler from "../socketHandlers/auth";
+import AuthSocketHandler from "../controllers/auth";
 
 const authSocketHandler = new AuthSocketHandler();
 

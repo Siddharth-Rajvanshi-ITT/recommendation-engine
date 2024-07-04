@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 
-import EmployeeChoiceSocketHandler from "../socketHandlers/employeeChoices";
+import EmployeeChoiceSocketHandler from "../controllers/employeeChoices";
 
 const employeeChoiceSocketHandler = new EmployeeChoiceSocketHandler();
 
