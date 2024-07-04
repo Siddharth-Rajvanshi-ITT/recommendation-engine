@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import UserSocketHandler from "../socketHandlers/user";
+import UserSocketHandler from "../controllers/user";
 
 const userSocketHandler = new UserSocketHandler();
 

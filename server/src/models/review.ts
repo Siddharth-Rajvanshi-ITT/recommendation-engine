@@ -80,7 +80,6 @@ Review.init(
     }
 );
 
-// Setting up the associations
 MenuItem.hasMany(Review, { foreignKey: 'foodItemId' });
 User.hasMany(Review, { foreignKey: 'userId' });
 Review.belongsTo(MenuItem, { foreignKey: 'foodItemId' });

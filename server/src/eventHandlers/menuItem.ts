@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import MenuItemSocketHandler from "../socketHandlers/menuItem";
+import MenuItemSocketHandler from "../controllers/menuItem";
 
 const menuItemSocketHandler = new MenuItemSocketHandler();
 

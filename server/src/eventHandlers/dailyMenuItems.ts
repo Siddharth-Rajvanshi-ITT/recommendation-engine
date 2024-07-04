@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import DailyMenuItemSocketHandler from "../socketHandlers/dailyMenuItems";
+import DailyMenuItemSocketHandler from "../controllers/dailyMenuItems";
 
 const dailyMenuItemSocketHandler = new DailyMenuItemSocketHandler();
 

@@ -2,6 +2,7 @@ import inquirer from 'inquirer';
 import MenuItemService from '../services/menuItem.js';
 import FeedbackService from '../services/feedback.js';
 import NotificationService from '../services/notification.js';
+import VoteItemService from '../services/voteItem.js';
 import { MenuItem } from '../types/menuItem.js';
 import { Notification } from '../types/notification.js';
 import { Socket } from 'socket.io-client';
@@ -9,51 +10,68 @@ import { Socket } from 'socket.io-client';
 let menuItemService: MenuItemService
 let notificationService: NotificationService
 let feedbackService: FeedbackService
+let voteItemService: VoteItemService
 
 
 class EmployeeCommands {
 
+    private static instance: EmployeeCommands;
+
+    private constructor() { }
+
+    public static getInstance(): EmployeeCommands {
+        if (!EmployeeCommands.instance) {
+            EmployeeCommands.instance = new EmployeeCommands();
+        }
+        return EmployeeCommands.instance;
+    }
+
     async displayMenu(io: Socket, user: any) {
+
+        console.log('Welcome to the Employee Portal!')
+
 
         menuItemService = new MenuItemService(io);
         notificationService = new NotificationService(io);
         feedbackService = new FeedbackService(io);
+        voteItemService = new VoteItemService(io)
 
-        const answer = await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'command',
-                message: 'Choose an action:',
-                choices: [
-                    { name: 'View Menu', value: 'viewMenu' },
-                    { name: 'Give Feedback', value: 'giveFeedback' },
-                    { name: 'View Notifications', value: 'viewNotifications' },
-                    { name: 'Choose Items for Upcoming Meal', value: 'chooseItemsForUpcomingMeal' },
-                    { name: 'Exit', value: 'exit' },
-                ],
-            },
-        ]);
+        while (true) {
+            const answer = await inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'command',
+                    message: 'Choose an action:',
+                    choices: [
+                        { name: 'View Menu', value: 'viewMenu' },
+                        { name: 'Give Feedback', value: 'giveFeedback' },
+                        { name: 'View Notifications', value: 'viewNotifications' },
+                        { name: 'Choose Items for Upcoming Meal', value: 'chooseItemsForUpcomingMeal' },
+                        { name: 'Exit', value: 'exit' },
+                    ],
+                },
+            ]);
 
-        switch (answer.command) {
-            case 'viewMenu':
-                await this.viewMenu();
-                break;
-            case 'giveFeedback':
-                await this.giveFeedback();
-                break;
-            case 'viewNotifications':
-                await this.viewNotifications();
-                break;
-            case 'chooseItemsForUpcomingMeal':
-                await this.chooseItemsForUpcomingMeal();
-                break;
-            case 'exit': console.log('exiting');
-                return;
+            switch (answer.command) {
+                case 'viewMenu':
+                    await this.viewMenu();
+                    break;
+                case 'giveFeedback':
+                    await this.giveFeedback();
+                    break;
+                case 'viewNotifications':
+                    await this.viewNotifications();
+                    break;
+                case 'chooseItemsForUpcomingMeal':
+                    await this.chooseItemsForUpcomingMeal();
+                    break;
+                case 'exit': console.log('exiting');
+                    process.exit(0);
 
-            default:
-                console.log('Unknown command');
+                default:
+                    console.log('Unknown command');
+            }
         }
-
     }
 
     async viewMenu() {
@@ -180,9 +198,16 @@ class EmployeeCommands {
 
             const selectedCategory = await this.getCategoryChoice(rolledOutItems);
             const filteredItems = this.filterItemsByCategory(rolledOutItems, selectedCategory);
-            const selectedItems = await this.promptUserForItems(filteredItems);
+            const selectedItem = await this.promptUserForItems(filteredItems);
 
-            console.log('Your meal choices have been recorded:', selectedItems);
+            console.log('-----------Before vote--------------')
+
+            await voteItemService.vote(selectedItem)
+
+            console.log('-----------after vote--------------')
+
+
+            console.log('Your meal choices have been recorded:', selectedItem);
         } catch (error: any) {
             console.error('Error selecting items for the upcoming meal:', error.message);
         }
@@ -214,12 +239,13 @@ class EmployeeCommands {
             .map(item => item.item_details);
     }
 
-    private async promptUserForItems(filteredItems: any[]): Promise<number[]> {
+    private async promptUserForItems(filteredItems: any[]) {
         const choices = filteredItems.map(item => {
             return {
-            name: `${item.name} (Category: ${item.category}, Price: ${item.price})`,
-            value: item,
-        }});
+                name: `${item.name} (Category: ${item.category}, Price: ${item.price})`,
+                value: item,
+            }
+        });
 
         const { selectedItem } = await inquirer.prompt([
             { type: 'list', name: 'selectedItem', message: 'Select items for the upcoming meal:', choices },
@@ -231,4 +257,4 @@ class EmployeeCommands {
 
 }
 
-export default EmployeeCommands;
+export default EmployeeCommands.getInstance();

@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import FeedbackSocketHandler from "../socketHandlers/feedback";
+import FeedbackSocketHandler from "../controllers/feedback";
 
 const feedbackSocketHandler = new FeedbackSocketHandler();
 

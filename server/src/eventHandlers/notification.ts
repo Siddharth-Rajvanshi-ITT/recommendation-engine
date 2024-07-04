@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import NotificationSocketHandler from "../socketHandlers/notifications";
+import NotificationSocketHandler from "../controllers/notifications";
 
 const notificationSocketHandler = new NotificationSocketHandler();
 

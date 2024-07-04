@@ -8,8 +8,23 @@ let menuItemService: MenuItemService
 const commonCommands = new CommonCommands()
 
 class AdminCommands {
+
+    private static instance: AdminCommands;
+
+    private constructor() { }
+
+    public static getInstance(): AdminCommands {
+        if (!AdminCommands.instance) {
+            AdminCommands.instance = new AdminCommands();
+        }
+        return AdminCommands.instance;
+    }
+
+
     async displayMenu(io: Socket): Promise<void> {
         menuItemService = new MenuItemService(io);
+
+        console.log('Welcome to the Admin Portal!')
 
         const answers = await inquirer.prompt([
             {
@@ -40,7 +55,8 @@ class AdminCommands {
             case 'seeMenuItem':
                 await commonCommands.showMenuItems(io);
                 break;
-            case 'exit': return;
+            case 'exit': console.log('exiting');
+                process.exit(0);
 
             default:
                 console.log('Invalid command.');
@@ -149,4 +165,4 @@ class AdminCommands {
 
 }
 
-export default AdminCommands;
+export default AdminCommands.getInstance();

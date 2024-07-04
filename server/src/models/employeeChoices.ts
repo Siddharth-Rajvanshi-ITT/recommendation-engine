@@ -64,7 +64,6 @@ EmployeeChoices.init(
     }
 );
 
-// Setting up the associations
 User.hasMany(EmployeeChoices, { foreignKey: 'user_id' });
 DailyMenu.hasMany(EmployeeChoices, { foreignKey: 'menu_id' });
 MenuItem.hasMany(EmployeeChoices, { foreignKey: 'item_id' });
