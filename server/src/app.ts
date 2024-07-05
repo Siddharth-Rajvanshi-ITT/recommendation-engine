@@ -13,6 +13,7 @@ import NotificationEventHandler from "./eventHandlers/notification";
 import RecommendationEventHandler from "./eventHandlers/recommendation";
 import DailyRolloutEventHandler from "./eventHandlers/dailyRollout";
 import VoteItemEventHandler from "./eventHandlers/voteItem";
+import DailyUserVoteEventHandler from "./eventHandlers/dailyUserVote";
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -31,6 +32,7 @@ io.on("connection", (socket: Socket) => {
     const recommendationEventHandler = new RecommendationEventHandler(socket)
     const dailyRolloutEventHandler = new DailyRolloutEventHandler(socket)
     const voteItemEventHandler = new VoteItemEventHandler(socket);
+    const dailyUserVoteEventHandler = new DailyUserVoteEventHandler(socket);
 
     console.log(`New client connected: ${socket.id}`);
 
@@ -45,6 +47,7 @@ io.on("connection", (socket: Socket) => {
     recommendationEventHandler.listen()
     dailyRolloutEventHandler.listen()
     voteItemEventHandler.listen()
+    dailyUserVoteEventHandler.listen()
 
     socket.on("disconnect", () => {
         console.log(`Client disconnected: ${socket.id}`);

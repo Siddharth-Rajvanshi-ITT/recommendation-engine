@@ -72,9 +72,6 @@ async function main() {
                 default:
                     console.log('Invalid user type.');
             }
-
-            // process.exit(0);
-
         } else {
             console.log('Login failed. Please check your credentials.');
         }

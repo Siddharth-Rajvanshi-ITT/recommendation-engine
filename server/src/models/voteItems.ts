@@ -4,6 +4,7 @@ import sequelize from "../config/database";
 interface VoteItemAttributes {
     id: number;
     menu_id: number;
+    category: string;
     date: string;
     votes: number;
 }
@@ -13,6 +14,7 @@ interface VoteItemCreationAttributes extends Optional<VoteItemAttributes, "id" |
 class VoteItem extends Model<VoteItemAttributes, VoteItemCreationAttributes> implements VoteItemAttributes {
     public id!: number;
     public menu_id!: number;
+    public category!: string;
     public date!: string;
     public votes!: number;
 
@@ -32,6 +34,10 @@ VoteItem.init(
         },
         date: {
             type: new DataTypes.STRING(10),
+            allowNull: false,
+        },
+        category: {
+            type: new DataTypes.STRING(128),
             allowNull: false,
         },
         votes: {

@@ -2,9 +2,9 @@ import inquirer from 'inquirer';
 import { isValidDateFormat } from '../utils/date.js';
 import { Socket } from 'socket.io-client';
 import RecommendationService from '../services/recommendation.js';
+import VoteItemService from '../services/voteItem.js';
 
 const recommendationService = new RecommendationService();
-
 class ChefCommands {
 
     private static instance: ChefCommands;
@@ -28,6 +28,7 @@ class ChefCommands {
                     choices: [
                         'Propose Daily Menu',
                         'View Feedback',
+                        'View top voted items',
                         'Exit'
                     ]
                 }
@@ -40,9 +41,11 @@ class ChefCommands {
                 case 'View Feedback':
                     await this.viewFeedback(io);
                     break;
+                case 'View top voted items':
+                    await this.viewTopVotedItems(io);
+                    break;
                 case 'Exit': console.log('exiting');
-                process.exit(0);
-
+                    process.exit(0);
                 default:
                     console.log('Invalid command');
                     break;
@@ -63,60 +66,109 @@ class ChefCommands {
         if (alreadyExists.create) {
             console.log('Creating daily rollout...');
             io.emit('createDailyRollout', { date: newDate, menu_type });
+            await this.createRolloutListener(io, newDate, menu_type, selectedItems);
         } else if (alreadyExists.modify) {
             console.log('Modifying daily rollout...');
             io.emit('updateDailyRollout', { date: newDate, menu_type });
+            await this.updateRolloutListener(io, newDate, menu_type, selectedItems);
         }
-
-        await this.rolloutListener(io, newDate, menu_type, selectedItems);
-        await this.notificationListener(io);
     }
 
-    private async rolloutListener(io: Socket, newDate: string, menu_type: string, selectedItems: number[]): Promise<void> {
+    private async createRolloutListener(io: Socket, newDate: string, menu_type: string, selectedItems: number[]): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            io.once('createDailyRolloutSuccess', (response) => {
+            const successHandler = async () => {
+                io.off('createDailyRolloutSuccess', successHandler);
+                io.off('createDailyRolloutError', errorHandler);
                 io.emit('createNotification', { notification_type: `new_${menu_type}_menu`, notification_data: selectedItems, notification_timestamp: newDate });
-                console.log('Daily menu rolled out successfully:', response);
+                console.log('Daily menu rolled out successfully');
+                await this.createNotificationListener(io);
                 resolve();
-            });
+            };
 
-            io.once('updateDailyRolloutSuccess', (response) => {
-                io.emit('createNotification', { notification_type: `new_${menu_type}_menu`, notification_data: selectedItems, notification_timestamp: newDate });
-                console.log('Daily menu updated successfully:', response);
-                resolve();
-            });
-
-            io.once('createDailyRolloutError', (error) => {
+            const errorHandler = (error: any) => {
+                io.off('createDailyRolloutSuccess', successHandler);
+                io.off('createDailyRolloutError', errorHandler);
                 console.log('Error in rolling out daily menu:', error);
                 reject(error);
-            });
+            };
 
-            io.once('updateDailyRolloutError', (error) => {
+            io.on('createDailyRolloutSuccess', successHandler);
+            io.on('createDailyRolloutError', errorHandler);
+        });
+    }
+
+    private async updateRolloutListener(io: Socket, newDate: string, menu_type: string, selectedItems: number[]): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const successHandler = async () => {
+                io.off('updateDailyRolloutSuccess', successHandler);
+                io.off('updateDailyRolloutError', errorHandler);
+                io.emit('createNotification', { notification_type: `new_${menu_type}_menu`, notification_data: selectedItems, notification_timestamp: newDate });
+                console.log('Daily menu updated successfully');
+                await this.updateNotificationListener(io);
+                resolve();
+            };
+
+            const errorHandler = (error: any) => {
+                io.off('updateDailyRolloutSuccess', successHandler);
+                io.off('updateDailyRolloutError', errorHandler);
                 console.log('Error in updating daily menu:', error);
                 reject(error);
-            });
+            };
+
+            io.on('updateDailyRolloutSuccess', successHandler);
+            io.on('updateDailyRolloutError', errorHandler);
         });
     }
 
-    private async notificationListener(io: Socket): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            io.once('createNotificationSuccess', (response) => {
-                console.log('Notification sent successfully:', response);
-                resolve();
-            });
 
-            io.once('createNotificationError', (error) => {
+    private async createNotificationListener(io: Socket): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const successHandler = () => {
+                io.off('createNotificationSuccess', successHandler);
+                io.off('createNotificationError', errorHandler);
+                console.log('Notification sent successfully');
+                resolve();
+            };
+
+            const errorHandler = (error: any) => {
+                io.off('createNotificationSuccess', successHandler);
+                io.off('createNotificationError', errorHandler);
                 console.log('Error while sending notification:', error);
                 reject(error);
-            });
+            };
+
+            io.on('createNotificationSuccess', successHandler);
+            io.on('createNotificationError', errorHandler);
         });
     }
+
+    private async updateNotificationListener(io: Socket): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const successHandler = () => {
+                io.off('createNotificationSuccess', successHandler);
+                io.off('createNotificationError', errorHandler);
+                console.log('Notification sent successfully');
+                resolve();
+            };
+
+            const errorHandler = (error: any) => {
+                io.off('createNotificationSuccess', successHandler);
+                io.off('createNotificationError', errorHandler);
+                console.log('Error while sending notification:', error);
+                reject(error);
+            };
+
+            io.on('createNotificationSuccess', successHandler);
+            io.on('createNotificationError', errorHandler);
+        });
+    }
+
 
     private async checkExistingRollout(io: Socket, date: string, menu_type: string): Promise<{ create: boolean, modify: boolean }> {
         return new Promise((resolve, reject) => {
             io.emit('getDailyRolloutByDate', { date });
 
-            io.on('getDailyRolloutByDateSuccess', (response) => {
+            io.once('getDailyRolloutByDateSuccess', (response) => {
                 if (!response) {
                     resolve({ create: true, modify: false });
                 } else {
@@ -131,7 +183,7 @@ class ChefCommands {
                 }
             });
 
-            io.on('getDailyRolloutByDateError', (error) => {
+            io.once('getDailyRolloutByDateError', (error) => {
                 reject(new Error(error.message));
             });
         });
@@ -186,6 +238,16 @@ class ChefCommands {
             console.log('Feedback:', response);
         });
     };
+
+    public async viewTopVotedItems(io: Socket) {
+        const voteItemService = new VoteItemService(io);
+
+        const menu_type = await this.promptMenuType();
+        const voteItems = await voteItemService.getVoteItems(menu_type);
+
+        console.log('Top voted items for', menu_type, 'are:');
+        console.table(voteItems);
+    }
 }
 
 export default ChefCommands.getInstance();
