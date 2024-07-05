@@ -1,9 +1,9 @@
 import VoteItem from '../models/voteItems';
 
 class VoteItemService {
-    public async createVoteItem(menu_id: number, date: string): Promise<VoteItem> {
+    public async createVoteItem(menu_id: number, category: string, date: string): Promise<VoteItem> {
         try {
-            const voteItem = await VoteItem.create({ menu_id, date });
+            const voteItem = await VoteItem.create({ menu_id, category, date });
             return voteItem;
         } catch (error) {
             console.error('Error creating vote item:', error);
@@ -49,12 +49,13 @@ class VoteItemService {
         }
     }
 
-    public async vote(menu_id: number, date: string): Promise<VoteItem> {
+    public async vote(menu_id: number, category: string, date: string): Promise<VoteItem> {
         try {
             const existingVoteItem = await VoteItem.findOne({
                 where: {
                     menu_id,
-                    date
+                    date,
+                    category
                 }
             });
 
@@ -62,7 +63,7 @@ class VoteItemService {
                 await existingVoteItem.incrementVote();
                 return existingVoteItem;
             } else {
-                const newVoteItem = await this.createVoteItem(menu_id, date);
+                const newVoteItem = await this.createVoteItem(menu_id, category, date);
                 return newVoteItem;
             }
         } catch (error) {
@@ -71,11 +72,12 @@ class VoteItemService {
         }
     }
 
-    public async getVoteItemsByDate(date: string): Promise<VoteItem[]> {
+    public async getVoteItemsByDateAndCategory(date: string, category): Promise<VoteItem[]> {
         try {
             const voteItems = await VoteItem.findAll({
                 where: {
-                    date
+                    date,
+                    category
                 }
             });
             return voteItems;

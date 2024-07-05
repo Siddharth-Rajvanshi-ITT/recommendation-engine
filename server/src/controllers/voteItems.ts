@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 import VoteItemService from '../services/voteItem';
+import MenuItemService from 'src/services/menuItem';
 
 class VoteItemController {
     private voteItemService: VoteItemService;
@@ -9,22 +10,40 @@ class VoteItemController {
     }
 
     public createVoteItem = async (socket: Socket, data: any): Promise<void> => {
-        const { menu_id, date } = data;
+        const { menu_id, category, date } = data;
         try {
-            const voteItem = await this.voteItemService.createVoteItem(menu_id, date);
+            const voteItem = await this.voteItemService.createVoteItem(menu_id, category, date);
             socket.emit('createVoteItemSuccess', voteItem);
         } catch (error) {
             socket.emit('createVoteItemError', { error: error.message });
         }
     };
 
-    public getVoteItems = async (socket: Socket, data: any): Promise<void> => {
-        const { date } = data;
+    public getVoteItems = async (socket: Socket, data): Promise<void> => {
+        const menuItemService = new MenuItemService();
+
+
+        const { category } = data;
+        const date = new Date().toISOString().split('T')[0];
         try {
-            const voteItems = await this.voteItemService.getVoteItemsByDate(date);
-            socket.emit('getVoteItemsSuccess', voteItems);
+            const voteItems = await this.voteItemService.getVoteItemsByDateAndCategory(date, category);
+
+            const items = await Promise.all(voteItems.map(async (item) => {
+                const menuItem = await menuItemService.getMenuItemById(item.menu_id);
+                return {
+                    id: item.id,
+                    item_name: menuItem.name,
+                    date: item.date,
+                    category: item.category,
+                    votes: item.votes,
+                }
+            }));
+
+            console.log('items', items)
+
+            socket.emit('getVoteItemsSuccess', items);
         } catch (error) {
-            socket.emit('getVoteItemsError', { error: error.message });
+            socket.emit('getVoteItemsError', { message: error.message });
         }
     };
 
@@ -62,11 +81,12 @@ class VoteItemController {
 
     public vote = async (socket: Socket, data: any): Promise<void> => {
         console.log('vote event', data)
-        const  menu_id = data.menu_item.id;
+        const menu_id = data.menu_item.id;
+        const category = data.menu_item.category;
         const date = new Date().toISOString().split('T')[0];
 
         try {
-            const voteItem = await this.voteItemService.vote(menu_id, date);
+            const voteItem = await this.voteItemService.vote(menu_id, category, date);
             socket.emit('voteSuccess', voteItem);
         } catch (error) {
             socket.emit('voteError', { error: error.message });
