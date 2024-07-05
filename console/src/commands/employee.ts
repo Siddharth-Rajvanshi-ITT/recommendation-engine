@@ -57,13 +57,13 @@ class EmployeeCommands {
                     await this.viewMenu();
                     break;
                 case 'giveFeedback':
-                    await this.giveFeedback();
+                    await this.giveFeedback(user);
                     break;
                 case 'viewNotifications':
                     await this.viewNotifications();
                     break;
                 case 'chooseItemsForUpcomingMeal':
-                    await this.chooseItemsForUpcomingMeal();
+                    await this.chooseItemsForUpcomingMeal(user);
                     break;
                 case 'exit': console.log('exiting');
                     process.exit(0);
@@ -97,7 +97,7 @@ class EmployeeCommands {
         }
     }
 
-    async giveFeedback() {
+    async giveFeedback(user: any) {
 
         try {
             const answers = await inquirer.prompt([
@@ -182,7 +182,7 @@ class EmployeeCommands {
         });
     }
 
-    public async chooseItemsForUpcomingMeal(): Promise<void> {
+    public async chooseItemsForUpcomingMeal(user: any): Promise<void> {
         try {
             const currentDate = this.getCurrentDate();
             const notifications = await this.fetchNotifications(currentDate);
@@ -193,21 +193,23 @@ class EmployeeCommands {
                 return;
             }
 
-            console.log('Rolled out items for tomorrow: ', rolledOutItems);
             this.displayNotifications(rolledOutItems);
 
             const selectedCategory = await this.getCategoryChoice(rolledOutItems);
+
+            const isAlreadyVoted = await voteItemService.isAlreadyVoted(selectedCategory, user);
+
+            if(isAlreadyVoted){
+                console.log(`You have already voted for ${selectedCategory} meal`);
+                return;
+            }
+
             const filteredItems = this.filterItemsByCategory(rolledOutItems, selectedCategory);
             const selectedItem = await this.promptUserForItems(filteredItems);
 
-            console.log('-----------Before vote--------------')
+            await voteItemService.vote(selectedItem, user)
 
-            await voteItemService.vote(selectedItem)
-
-            console.log('-----------after vote--------------')
-
-
-            console.log('Your meal choices have been recorded:', selectedItem);
+            console.log(`Your meal choice for ${selectedCategory} have been recorded`);
         } catch (error: any) {
             console.error('Error selecting items for the upcoming meal:', error.message);
         }

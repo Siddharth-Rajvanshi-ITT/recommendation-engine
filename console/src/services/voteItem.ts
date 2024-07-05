@@ -22,9 +22,9 @@ class VoteItemService {
         });
     }
 
-    public async getVoteItems(dateofvote: string): Promise<VoteItem[]> {
+    public async getVoteItems(category: string): Promise<VoteItem[]> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getVoteItems', { dateofvote });
+            this.socket.emit('getVoteItems', { category });
 
             this.socket.on('getVoteItemsSuccess', (data: VoteItem[]) => {
                 resolve(data);
@@ -35,7 +35,7 @@ class VoteItemService {
             });
         });
     }
-
+    
     public async getVoteItemById(id: number): Promise<VoteItem> {
         return new Promise((resolve, reject) => {
             this.socket.emit('getVoteItemById', { id });
@@ -78,18 +78,31 @@ class VoteItemService {
         });
     }
 
-    public async vote(menu_item: number): Promise<VoteItem> {
-
-        console.log('voting in process---------------')
+    public async vote(menu_item: number, user: any): Promise<VoteItem> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('vote', { menu_item });
+            this.socket.emit('createUserVote', { menu_item, user });
 
-            this.socket.on('voteSuccess', (data: VoteItem) => {
+            this.socket.on('createUserVoteSuccess', (data: VoteItem) => {
+                this.socket.emit
                 resolve(data);
             });
 
-            this.socket.on('voteError', (error: any) => {
+            this.socket.on('createUserVoteError', (error: any) => {
                 reject(new Error(error.message || 'Failed to vote'));
+            });
+        });
+    }
+
+    public async isAlreadyVoted(category: string, user: any): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getUserVotesByCondition', { category, user });
+
+            this.socket.on('getUserVotesByConditionSuccess', (data: boolean) => {
+                resolve(data);
+            });
+
+            this.socket.on('getUserVotesByConditionError', (error: any) => {
+                reject(new Error(error.message || 'Failed to check if already voted'));
             });
         });
     }
