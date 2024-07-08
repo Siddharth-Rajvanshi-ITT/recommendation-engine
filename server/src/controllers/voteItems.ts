@@ -21,8 +21,6 @@ class VoteItemController {
 
     public getVoteItems = async (socket: Socket, data): Promise<void> => {
         const menuItemService = new MenuItemService();
-
-
         const { category } = data;
         const date = new Date().toISOString().split('T')[0];
         try {
@@ -32,7 +30,7 @@ class VoteItemController {
                 const menuItem = await menuItemService.getMenuItemById(item.menu_id);
                 return {
                     id: item.id,
-                    item_name: menuItem.name,
+                    name: menuItem.name,
                     date: item.date,
                     category: item.category,
                     votes: item.votes,
@@ -44,6 +42,31 @@ class VoteItemController {
             socket.emit('getVoteItemsSuccess', items);
         } catch (error) {
             socket.emit('getVoteItemsError', { message: error.message });
+        }
+    };
+
+    public getVoteItemsByDate = async (socket: Socket, data): Promise<void> => {
+        const menuItemService = new MenuItemService();
+        const { category, date } = data;
+        try {
+            const voteItems = await this.voteItemService.getVoteItemsByDateAndCategory(date, category);
+
+            const items = await Promise.all(voteItems.map(async (item) => {
+                const menuItem = await menuItemService.getMenuItemById(item.menu_id);
+                return {
+                    id: item.menu_id,
+                    name: menuItem.name,
+                    date: item.date,
+                    category: item.category,
+                    votes: item.votes,
+                }
+            }));
+
+            console.log('items', items)
+
+            socket.emit('getVoteItemsByDateSuccess', items);
+        } catch (error) {
+            socket.emit('getVoteItemsByDateError', { message: error.message });
         }
     };
 

@@ -19,6 +19,10 @@ export default class VoteItemEventHandler {
             await voteItemController.getVoteItems(this.socket, data);
         });
 
+        this.socket.on("getVoteItemsByDate", async (data) => {
+            await voteItemController.getVoteItemsByDate(this.socket, data);
+        });
+
         this.socket.on("getVoteItemById", async (data) => {
             await voteItemController.getVoteItemById(this.socket, data);
         });
@@ -32,7 +36,6 @@ export default class VoteItemEventHandler {
         });
 
         this.socket.on("vote", async (data) => {
-            console.log('vote event');
             await voteItemController.vote(this.socket, data);
         });
     }

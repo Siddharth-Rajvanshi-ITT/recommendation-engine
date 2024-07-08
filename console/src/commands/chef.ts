@@ -1,5 +1,4 @@
 import inquirer from 'inquirer';
-import { isValidDateFormat } from '../utils/date.js';
 import { Socket } from 'socket.io-client';
 import RecommendationService from '../services/recommendation.js';
 import VoteItemService from '../services/voteItem.js';
@@ -27,8 +26,8 @@ class ChefCommands {
                     message: 'Choose an action:',
                     choices: [
                         'Propose Daily Menu',
-                        'View Feedback',
                         'View top voted items',
+                        'Submit Daily Menu',
                         'Exit'
                     ]
                 }
@@ -38,11 +37,11 @@ class ChefCommands {
                 case 'Propose Daily Menu':
                     await this.proposeDailyMenu(io);
                     break;
-                case 'View Feedback':
-                    await this.viewFeedback(io);
-                    break;
                 case 'View top voted items':
                     await this.viewTopVotedItems(io);
+                    break;
+                case 'Submit Daily Menu':
+                    await this.submitDailyMenu(io);
                     break;
                 case 'Exit': console.log('exiting');
                     process.exit(0);
@@ -55,22 +54,23 @@ class ChefCommands {
 
     private async proposeDailyMenu(io: Socket) {
         const menu_type = await this.promptMenuType();
-        const menu_date = new Date();
-        const newDate = menu_date.toISOString().split('T')[0];
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const menu_date = tomorrow.toISOString().split('T')[0];
 
-        const alreadyExists = await this.checkExistingRollout(io, newDate, menu_type);
+        const alreadyExists = await this.checkExistingRollout(io, menu_date, menu_type);
         if (!alreadyExists.create && !alreadyExists.modify) return;
 
         const selectedItems = await this.promptMenuItems(io, menu_type);
 
         if (alreadyExists.create) {
             console.log('Creating daily rollout...');
-            io.emit('createDailyRollout', { date: newDate, menu_type });
-            await this.createRolloutListener(io, newDate, menu_type, selectedItems);
+            io.emit('createDailyRollout', { date: menu_date, menu_type });
+            await this.createRolloutListener(io, menu_date, menu_type, selectedItems);
         } else if (alreadyExists.modify) {
             console.log('Modifying daily rollout...');
-            io.emit('updateDailyRollout', { date: newDate, menu_type });
-            await this.updateRolloutListener(io, newDate, menu_type, selectedItems);
+            io.emit('updateDailyRollout', { date: menu_date, menu_type });
+            await this.updateRolloutListener(io, menu_date, menu_type, selectedItems);
         }
     }
 
@@ -232,22 +232,156 @@ class ChefCommands {
         return selectedItems;
     }
 
-    private viewFeedback = (io: Socket) => {
-        io.emit('viewFeedback');
-        io.on('viewFeedbackResponse', (response) => {
-            console.log('Feedback:', response);
-        });
-    };
-
     public async viewTopVotedItems(io: Socket) {
         const voteItemService = new VoteItemService(io);
 
         const menu_type = await this.promptMenuType();
         const voteItems = await voteItemService.getVoteItems(menu_type);
 
+        if (!voteItems.length) {
+            console.log("No one has voted yet.")
+            return;
+        }
+
         console.log('Top voted items for', menu_type, 'are:');
         console.table(voteItems);
+
+        return voteItems;
     }
+
+    public async submitDailyMenu(io: Socket) {
+        const voteItemService = new VoteItemService(io);
+
+        const menu_type = await this.promptMenuType();
+        const menu_date = new Date().toISOString().split('T')[0];
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const vote_date = yesterday.toISOString().split('T')[0];
+
+        const alreadyExists = await this.checkExistingDailyMenu(io, menu_date, menu_type);
+        if (!alreadyExists.create && !alreadyExists.modify) return;
+
+        const topVotedItems = await voteItemService.getVoteItemsByDate(menu_type, vote_date);
+
+        if (!topVotedItems.length) {
+            console.log("No one has voted yet, please wait!");
+            return;
+        }
+
+        console.table(topVotedItems)
+
+        const dailyMenuItem = await this.promptDailyMenu(topVotedItems);
+
+        if (alreadyExists.create) {
+            console.log('Creating daily item submission...');
+            io.emit('createDailyItemSubmission', { date: menu_date, menu_type });
+            await this.createItemSubmissionListener(io, dailyMenuItem.item_id, +dailyMenuItem.quantity);
+        } else if (alreadyExists.modify) {
+            console.log('Modifying daily item submission...');
+            io.emit('updateDailyItemSubmission', { date: menu_date, menu_type });
+            await this.updateItemSubmissionListener(io, dailyMenuItem.item_id, +dailyMenuItem.quantity);
+        }
+    }
+
+    private async createItemSubmissionListener(io: Socket, item_id: number, quantity: number): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const successHandler = async () => {
+                io.off('createDailyItemSubmissionSuccess', successHandler);
+                io.off('createDailyItemSubmissionError', errorHandler);
+                io.emit('createDailyMenuItem', { item_id, quantity });
+                console.log('Daily item submission created successfully');
+                resolve();
+            };
+
+            const errorHandler = (error: any) => {
+                io.off('createDailyItemSubmissionSuccess', successHandler);
+                io.off('createDailyItemSubmissionError', errorHandler);
+                console.log('Error in creating daily item submission:', error);
+                reject(error);
+            };
+
+            io.on('createDailyItemSubmissionSuccess', successHandler);
+            io.on('createDailyItemSubmissionError', errorHandler);
+        });
+    }
+
+    private async updateItemSubmissionListener(io: Socket, item_id: number, quantity: number): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const successHandler = async () => {
+                io.off('updateDailyItemSubmissionSuccess', successHandler);
+                io.off('updateDailyItemSubmissionError', errorHandler);
+                io.emit('createDailyMenuItem', { item_id, quantity });
+                console.log('Daily item submission updated successfully');
+                resolve();
+            };
+
+            const errorHandler = (error: any) => {
+                io.off('updateDailyItemSubmissionSuccess', successHandler);
+                io.off('updateDailyItemSubmissionError', errorHandler);
+                console.log('Error in updating daily item submission:', error);
+                reject(error);
+            };
+
+            io.on('updateDailyItemSubmissionSuccess', successHandler);
+            io.on('updateDailyItemSubmissionError', errorHandler);
+        });
+    }
+
+    private async promptDailyMenu(topVotedItems: any) {
+        const dailyMenuItem = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'item_id',
+                message: 'Select menu item you are preparing:',
+                choices: topVotedItems.map((item: any) => {
+                    return {
+                        name: item.name,
+                        value: item.id
+                    }
+                })
+            },
+            {
+                type: 'input',
+                name: 'quantity',
+                message: 'Enter quantity prepared:',
+                validate: function (value) {
+                    if (isNaN(value) || value < 1) {
+                        return 'Please enter a valid quantity';
+                    }
+                    return true;
+                }
+            }
+        ]);
+
+        return dailyMenuItem;
+    }
+
+    private async checkExistingDailyMenu(io: Socket, date: string, menu_type: string): Promise<{ create: boolean, modify: boolean }> {
+        return new Promise((resolve, reject) => {
+            io.emit('getDailyItemSubmissionByDate', { date });
+
+            io.once('getDailyItemSubmissionByDateSuccess', (response) => {
+                if (!response) {
+                    resolve({ create: true, modify: false });
+                } else {
+                    if ((response.breakfast && menu_type === 'breakfast') ||
+                        (response.lunch && menu_type === 'lunch') ||
+                        (response.dinner && menu_type === 'dinner')) {
+                        console.log(`${menu_type.charAt(0).toUpperCase() + menu_type.slice(1)} already submitted for ${date}`);
+                        resolve({ create: false, modify: false });
+                    } else {
+                        resolve({ create: false, modify: true });
+                    }
+                }
+            });
+
+            io.once('getDailyItemSubmissionByDateError', (error) => {
+                reject(new Error(error.message));
+            });
+        });
+    }
+
 }
 
 export default ChefCommands.getInstance();
