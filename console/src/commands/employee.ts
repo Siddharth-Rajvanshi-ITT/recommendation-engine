@@ -6,11 +6,15 @@ import VoteItemService from '../services/voteItem.js';
 import { MenuItem } from '../types/menuItem.js';
 import { Notification } from '../types/notification.js';
 import { Socket } from 'socket.io-client';
+import DailyMenuItemService from '../services/dailyMenuItem.js';
+import DailyFeedbackService from '../services/dailyUserFeedback.js';
 
 let menuItemService: MenuItemService
 let notificationService: NotificationService
 let feedbackService: FeedbackService
 let voteItemService: VoteItemService
+let dailyMenuItemService: DailyMenuItemService
+let dailyFeedbackService: DailyFeedbackService
 
 
 class EmployeeCommands {
@@ -35,6 +39,8 @@ class EmployeeCommands {
         notificationService = new NotificationService(io);
         feedbackService = new FeedbackService(io);
         voteItemService = new VoteItemService(io)
+        dailyMenuItemService = new DailyMenuItemService(io)
+        dailyFeedbackService = new DailyFeedbackService(io)
 
         while (true) {
             const answer = await inquirer.prompt([
@@ -100,26 +106,82 @@ class EmployeeCommands {
     async giveFeedback(user: any) {
 
         try {
-            const answers = await inquirer.prompt([
-                { type: 'input', name: 'item_id', message: 'Enter the ID of the menu item:' },
-                { type: 'input', name: 'rating', message: 'Enter your rating (1-5):' },
-                { type: 'input', name: 'comment', message: 'Enter your feedback:' },
-                { type: 'input', name: 'user_id', message: 'Enter your user ID:' },
-            ]);
+
+            console.log('User:', user)
+
+            console.log('Inside giveFeedback')
+            const currentDate = new Date().toISOString().split('T')[0];
+
+            const dailyMenuItems = await dailyMenuItemService.getDailyMenuItemByDate(currentDate);
+
+            console.log('--- Daily Menu Items ---', dailyMenuItems);
+
+            console.table(dailyMenuItems)
+
+            const selectedItem = await this.promptUserForFeedbackItems(dailyMenuItems as any);
+
+
+            const isAlreadyProvidedFeedback = await dailyFeedbackService.isAlreadyProvidedFeedback(selectedItem.category, user);
+
+            if (isAlreadyProvidedFeedback) {
+                console.log(`You have already voted for ${selectedItem.name}`);
+                return;
+            }
+
+            const employeeFeedback = await this.promptFeedback();
+
+            console.log('selectedItem:', selectedItem)
+            
 
             const feedback = {
-                item_id: parseInt(answers.item_id),
-                user_id: parseInt(answers.user_id),
-                rating: parseInt(answers.rating),
-                comment: answers.comment,
-                feedback_date: new Date(),
+                item_id: parseInt(selectedItem.id),
+                user_id: parseInt(user.id),
+                rating: +employeeFeedback.rating,
+                comment: employeeFeedback.comment,
+                feedback_date: new Date().toISOString().split('T')[0],
             };
 
-            await feedbackService.createFeedback(feedback.item_id, feedback.user_id, feedback.rating, feedback.comment, feedback.feedback_date);
+            await feedbackService.createFeedback(feedback.item_id, feedback.user_id, feedback.rating, feedback.comment, feedback.feedback_date, selectedItem.category);
             console.log('Feedback submitted successfully');
         } catch (error: any) {
             console.error('Error submitting feedback:', error.message);
         }
+    }
+
+    private async promptUserForFeedbackItems(filteredItems: any[]) {
+        const choices = filteredItems.map(item => {
+            return {
+                name: `${item.name}`,
+                value: item
+            }
+        });
+
+        const { selectedItem } = await inquirer.prompt([
+            { type: 'list', name: 'selectedItem', message: 'Select items for the upcoming meal:', choices },
+        ]);
+
+        return selectedItem;
+    }
+
+    private async promptMenuType(): Promise<string> {
+        const { menu_type } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'menu_type',
+                message: 'Select menu type:',
+                choices: ['breakfast', 'lunch', 'dinner']
+            },
+        ]);
+
+        return menu_type;
+    }
+
+    private async promptFeedback(): Promise<{rating: number, comment: string}> {
+        const feedback = await inquirer.prompt([
+            { type: 'input', name: 'rating', message: 'Enter your rating (1-5):' },
+            { type: 'input', name: 'comment', message: 'Enter your feedback:' },
+        ]);
+        return feedback;
     }
 
     public async viewNotifications(): Promise<void> {
@@ -138,13 +200,16 @@ class EmployeeCommands {
     }
 
     private getCurrentDate(): string {
-        const date = new Date();
-        return date.toISOString().split('T')[0];
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const menu_date = tomorrow.toISOString().split('T')[0];
+
+        return menu_date;
     }
 
     private async fetchNotifications(date: string): Promise<Notification[]> {
         try {
-            const notifications = await notificationService.getNotificationByDate(date);
+            const notifications = await notificationService.getNotificationsByDate(date);
             if (!notifications || notifications.length === 0) {
                 console.log('No notifications found');
                 return [];
@@ -199,7 +264,7 @@ class EmployeeCommands {
 
             const isAlreadyVoted = await voteItemService.isAlreadyVoted(selectedCategory, user);
 
-            if(isAlreadyVoted){
+            if (isAlreadyVoted) {
                 console.log(`You have already voted for ${selectedCategory} meal`);
                 return;
             }

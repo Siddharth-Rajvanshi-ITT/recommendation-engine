@@ -35,6 +35,20 @@ class VoteItemService {
             });
         });
     }
+
+    public async getVoteItemsByDate(category: string, date: string): Promise<VoteItem[]> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getVoteItemsByDate', { category, date });
+
+            this.socket.on('getVoteItemsByDateSuccess', (data: VoteItem[]) => {
+                resolve(data);
+            });
+
+            this.socket.on('getVoteItemsByDateError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch vote items'));
+            });
+        });
+    }
     
     public async getVoteItemById(id: number): Promise<VoteItem> {
         return new Promise((resolve, reject) => {

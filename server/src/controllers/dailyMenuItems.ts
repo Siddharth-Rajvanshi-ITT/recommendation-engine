@@ -9,12 +9,13 @@ class DailyMenuItemController {
     }
 
     public createDailyMenuItem = async (socket: Socket, data: any): Promise<void> => {
-        const { menu_id, item_id, quantity_prepared } = data;
+        const menu_date = new Date().toISOString().split('T')[0];
+        const { item_id, quantity } = data;
         try {
-            const dailyMenuItem = await this.dailyMenuItemService.createDailyMenuItem(menu_id, item_id, quantity_prepared);
+            const dailyMenuItem = await this.dailyMenuItemService.createDailyMenuItem(item_id, quantity, menu_date);
             socket.emit('createDailyMenuItemSuccess', dailyMenuItem);
         } catch (error) {
-            socket.emit('createDailyMenuItemError', { error: error.message });
+            socket.emit('createDailyMenuItemError', { message: error.message });
         }
     };
 
@@ -34,6 +35,18 @@ class DailyMenuItemController {
             socket.emit('getDailyMenuItemByIdSuccess', dailyMenuItem);
         } catch (error) {
             socket.emit('getDailyMenuItemByIdError', { error: error.message });
+        }
+    };
+
+    public getDailyMenuItemByDate = async (socket: Socket, data: any): Promise<void> => {
+        const { date } = data;
+
+        console.log("getDailyMenuItemByDate date", date)
+        try {
+            const dailyMenuItem = await this.dailyMenuItemService.getDailyMenuItemByDate(date);
+            socket.emit('getDailyMenuItemByDateSuccess', dailyMenuItem);
+        } catch (error) {
+            socket.emit('getDailyMenuItemByDateError', { error: error.message });
         }
     };
 

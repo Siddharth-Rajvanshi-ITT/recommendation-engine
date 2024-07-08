@@ -9,9 +9,9 @@ class FeedbackController {
     }
 
     public createFeedback = async (socket: Socket, data: any): Promise<void> => {
-        const { item_id, user_id, rating, comment, feedback_date } = data;
+        const { item_id, user_id, rating, comment, feedback_date , category } = data;
         try {
-            const feedback = await this.feedbackService.createFeedback(item_id, user_id, rating, comment, feedback_date);
+            const feedback = await this.feedbackService.createFeedback(item_id, user_id, rating, comment, feedback_date, category);
             socket.emit('createFeedbackSuccess', feedback);
         } catch (error) {
             socket.emit('createFeedbackError', { error: error.message });
