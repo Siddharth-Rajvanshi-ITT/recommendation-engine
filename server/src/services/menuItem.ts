@@ -20,6 +20,7 @@ class MenuItemService {
     }
 
     async getMenuItemById(item_id: number) {
+        console.log("item_id", item_id)
         try {
             const menuItem = await MenuItem.findByPk(item_id);
             if (!menuItem) {

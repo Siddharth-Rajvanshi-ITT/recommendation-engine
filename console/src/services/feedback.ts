@@ -8,9 +8,9 @@ class FeedbackService {
         this.socket = socket;
     }
 
-    public async createFeedback(item_id: number, user_id: number, rating: number, comment: string, feedback_date: Date): Promise<Feedback> {
+    public async createFeedback(item_id: number, user_id: number, rating: number, comment: string, feedback_date: string, category: string): Promise<Feedback> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('createFeedback', { item_id, user_id, rating, comment, feedback_date });
+            this.socket.emit('createFeedback', { item_id, user_id, rating, comment, feedback_date, category });
 
             this.socket.on('createFeedbackSuccess', (data: Feedback) => {
                 resolve(data);

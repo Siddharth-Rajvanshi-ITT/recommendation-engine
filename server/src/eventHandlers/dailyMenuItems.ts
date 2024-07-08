@@ -20,6 +20,9 @@ export default class DailyMenuItemEventHandler {
         this.socket.on("getDailyMenuItemById", async (data) => {
             await dailyMenuItemSocketHandler.getDailyMenuItemById(this.socket, data);
         });
+        this.socket.on("getDailyMenuItemByDate", async (data) => {
+            await dailyMenuItemSocketHandler.getDailyMenuItemByDate(this.socket, data);
+        });
         this.socket.on("updateDailyMenuItem", async (data) => {
             await dailyMenuItemSocketHandler.updateDailyMenuItem(this.socket, data);
         });

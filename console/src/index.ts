@@ -74,8 +74,10 @@ async function main() {
             }
         } else {
             console.log('Login failed. Please check your credentials.');
+            process.exit(1);
         }
     } catch (error: any) {
         console.error('Error logging in:', error.message);
+        process.exit(1);
     }
 }
