@@ -13,10 +13,10 @@ interface UserAttributes {
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-    public id!: number;
-    employeeId: string;
-    public name!: string;
     public email!: string;
+    employeeId: string;
+    public id!: number;
+    public name!: string;
     public password!: string;
     public role!: "employee" | "admin" | "chef";
 }

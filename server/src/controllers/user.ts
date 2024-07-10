@@ -3,11 +3,6 @@ import UserService from '../services/user';
 
 class UserController {
     private userService: UserService;
-
-    constructor() {
-        this.userService = new UserService();
-    }
-
     public createUser = async (socket: Socket, data: any): Promise<void> => {
         const { employeeID, name, email, password } = data;
         try {
@@ -17,16 +12,15 @@ class UserController {
             socket.emit('createUserError', { error: error.message });
         }
     };
-
-    public getUsers = async (socket: Socket): Promise<void> => {
+    public deleteUser = async (socket: Socket, data: any): Promise<void> => {
+        const { id } = data;
         try {
-            const users = await this.userService.getUsers();
-            socket.emit('getUsersSuccess', users);
+            await this.userService.deleteUser(id);
+            socket.emit('deleteUserSuccess');
         } catch (error) {
-            socket.emit('getUsersError', { error: error.message });
+            socket.emit('deleteUserError', { error: error.message });
         }
     };
-
     public getUserById = async (socket: Socket, data: any): Promise<void> => {
         const { id } = data;
         try {
@@ -36,7 +30,14 @@ class UserController {
             socket.emit('getUserByIdError', { error: error.message });
         }
     };
-
+    public getUsers = async (socket: Socket): Promise<void> => {
+        try {
+            const users = await this.userService.getUsers();
+            socket.emit('getUsersSuccess', users);
+        } catch (error) {
+            socket.emit('getUsersError', { error: error.message });
+        }
+    };
     public updateUser = async (socket: Socket, data: any): Promise<void> => {
         const { id, name, email, password } = data;
         try {
@@ -47,15 +48,9 @@ class UserController {
         }
     };
 
-    public deleteUser = async (socket: Socket, data: any): Promise<void> => {
-        const { id } = data;
-        try {
-            await this.userService.deleteUser(id);
-            socket.emit('deleteUserSuccess');
-        } catch (error) {
-            socket.emit('deleteUserError', { error: error.message });
-        }
-    };
+    constructor() {
+        this.userService = new UserService();
+    }
 }
 
 export default UserController;

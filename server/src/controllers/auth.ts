@@ -3,11 +3,6 @@ import UserService from '../services/user';
 
 class AuthController {
     private userService: UserService;
-
-    constructor() {
-        this.userService = new UserService();
-    }
-
     public login = async (socket: Socket, data): Promise<void> => {
         const { employeeId, name } = data;
 
@@ -27,6 +22,10 @@ class AuthController {
             socket.emit('authError', { error: error.message });
         }
     };
+
+    constructor() {
+        this.userService = new UserService();
+    }
 }
 
 export default AuthController;

@@ -4,7 +4,7 @@ import DailyUserVoteSocketHandler from "../controllers/dailyUserVote";
 const dailyUserVoteSocketHandler = new DailyUserVoteSocketHandler();
 
 export default class DailyUserVoteEventHandler {
-    socket: Socket;
+    private socket: Socket;
 
     constructor(socket: Socket) {
         this.socket = socket;

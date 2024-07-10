@@ -22,16 +22,16 @@ class EmployeeChoicesService {
         });
     }
 
-    public async getEmployeeChoices(): Promise<EmployeeChoice[]> {
+    public async deleteEmployeeChoice(id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getEmployeeChoices');
+            this.socket.emit('deleteEmployeeChoice', { id });
 
-            this.socket.on('getEmployeeChoicesSuccess', (data: EmployeeChoice[]) => {
-                resolve(data);
+            this.socket.on('deleteEmployeeChoiceSuccess', () => {
+                resolve();
             });
 
-            this.socket.on('getEmployeeChoicesError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch employee choices'));
+            this.socket.on('deleteEmployeeChoiceError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete employee choice'));
             });
         });
     }
@@ -50,6 +50,20 @@ class EmployeeChoicesService {
         });
     }
 
+    public async getEmployeeChoices(): Promise<EmployeeChoice[]> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getEmployeeChoices');
+
+            this.socket.on('getEmployeeChoicesSuccess', (data: EmployeeChoice[]) => {
+                resolve(data);
+            });
+
+            this.socket.on('getEmployeeChoicesError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch employee choices'));
+            });
+        });
+    }
+
     public async updateEmployeeChoice(id: number, user_id: number, menu_id: number, item_id: number, quantity_chosen: number): Promise<EmployeeChoice> {
         return new Promise((resolve, reject) => {
             this.socket.emit('updateEmployeeChoice', { id, user_id, menu_id, item_id, quantity_chosen });
@@ -60,20 +74,6 @@ class EmployeeChoicesService {
 
             this.socket.on('updateEmployeeChoiceError', (error: any) => {
                 reject(new Error(error.message || 'Failed to update employee choice'));
-            });
-        });
-    }
-
-    public async deleteEmployeeChoice(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteEmployeeChoice', { id });
-
-            this.socket.on('deleteEmployeeChoiceSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteEmployeeChoiceError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete employee choice'));
             });
         });
     }

@@ -11,10 +11,10 @@ interface DailyMenuItemsAttributes {
 interface DailyMenuItemsCreationAttributes extends Optional<DailyMenuItemsAttributes, "id"> {}
 
 class DailyMenuItems extends Model<DailyMenuItemsAttributes, DailyMenuItemsCreationAttributes> implements DailyMenuItemsAttributes {
+    public date!: string;
     public id!: number;
     public item_id!: number;
     public quantity_prepared!: number;
-    public date!: string;
 }
 
 DailyMenuItems.init(

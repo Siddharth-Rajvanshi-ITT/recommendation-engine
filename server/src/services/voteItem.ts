@@ -11,12 +11,41 @@ class VoteItemService {
         }
     }
 
+    public async deleteVoteItem(id: number): Promise<boolean> {
+        try {
+            const voteItem = await this.getVoteItemById(id);
+            if (voteItem) {
+                await voteItem.destroy();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error deleting vote item:', error);
+            throw error;
+        }
+    }
+
     public async getVoteItemById(id: number): Promise<VoteItem | null> {
         try {
             const voteItem = await VoteItem.findByPk(id);
             return voteItem;
         } catch (error) {
             console.error('Error fetching vote item by ID:', error);
+            throw error;
+        }
+    }
+
+    public async getVoteItemsByDateAndCategory(date: string, category): Promise<VoteItem[]> {
+        try {
+            const voteItems = await VoteItem.findAll({
+                where: {
+                    date,
+                    category
+                }
+            });
+            return voteItems;
+        } catch (error) {
+            console.error('Error fetching vote items by date:', error);
             throw error;
         }
     }
@@ -31,20 +60,6 @@ class VoteItemService {
             return null;
         } catch (error) {
             console.error('Error updating vote item:', error);
-            throw error;
-        }
-    }
-
-    public async deleteVoteItem(id: number): Promise<boolean> {
-        try {
-            const voteItem = await this.getVoteItemById(id);
-            if (voteItem) {
-                await voteItem.destroy();
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error deleting vote item:', error);
             throw error;
         }
     }
@@ -68,21 +83,6 @@ class VoteItemService {
             }
         } catch (error) {
             console.error('Error voting:', error);
-            throw error;
-        }
-    }
-
-    public async getVoteItemsByDateAndCategory(date: string, category): Promise<VoteItem[]> {
-        try {
-            const voteItems = await VoteItem.findAll({
-                where: {
-                    date,
-                    category
-                }
-            });
-            return voteItems;
-        } catch (error) {
-            console.error('Error fetching vote items by date:', error);
             throw error;
         }
     }

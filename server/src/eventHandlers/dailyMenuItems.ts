@@ -4,7 +4,7 @@ import DailyMenuItemSocketHandler from "../controllers/dailyMenuItems";
 const dailyMenuItemSocketHandler = new DailyMenuItemSocketHandler();
 
 export default class DailyMenuItemEventHandler {
-    socket
+    private socket
 
     constructor(socket: Socket) {
         this.socket = socket

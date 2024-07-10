@@ -12,11 +12,11 @@ interface DailyRolloutAttributes {
 interface DailyRolloutCreationAttributes extends Optional<DailyRolloutAttributes, "id"> {}
 
 class DailyRollout extends Model<DailyRolloutAttributes, DailyRolloutCreationAttributes> implements DailyRolloutAttributes {
-    public id!: number;
     public breakfast!: boolean;
-    public lunch!: boolean;
-    public dinner!: boolean;
     public date!: string;
+    public dinner!: boolean;
+    public id!: number;
+    public lunch!: boolean;
 }
 
 DailyRollout.init(

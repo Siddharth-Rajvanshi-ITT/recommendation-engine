@@ -10,10 +10,13 @@ class MenuItemService {
         }
     }
 
-    async getMenuItems() {
+    async deleteMenuItem(item_id: number) {
         try {
-            const menuItems = await MenuItem.findAll();
-            return menuItems;
+            const menuItem = await MenuItem.findByPk(item_id);
+            if (!menuItem) {
+                throw new Error("Menu item not found");
+            }
+            await menuItem.destroy();
         } catch (error) {
             throw new Error(error.message);
         }
@@ -42,6 +45,15 @@ class MenuItemService {
             if (!menuItems) {
                 throw new Error("Menu item not found");
             }
+            return menuItems;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getMenuItems() {
+        try {
+            const menuItems = await MenuItem.findAll();
             return menuItems;
         } catch (error) {
             throw new Error(error.message);
@@ -89,18 +101,6 @@ class MenuItemService {
 
             await menuItem.save();
             return menuItem;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    async deleteMenuItem(item_id: number) {
-        try {
-            const menuItem = await MenuItem.findByPk(item_id);
-            if (!menuItem) {
-                throw new Error("Menu item not found");
-            }
-            await menuItem.destroy();
         } catch (error) {
             throw new Error(error.message);
         }

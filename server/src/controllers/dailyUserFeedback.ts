@@ -5,12 +5,6 @@ import FeedbackService from '../services/feedback';
 class DailyUserFeedbackController {
     private dailyUserFeedbackService: DailyUserFeedbackService;
     private feedbackService: FeedbackService;
-
-    constructor() {
-        this.dailyUserFeedbackService = new DailyUserFeedbackService();
-        this.feedbackService = new FeedbackService();
-    }
-
     public createUserFeedback = async (socket: Socket, data: any): Promise<void> => {
         const { category, rating, comment } = data.menu_item;
         const { id: user_id } = data.user;
@@ -25,16 +19,15 @@ class DailyUserFeedbackController {
             socket.emit('createUserFeedbackError', { message: error.message });
         }
     };
-
-    public getUserFeedbacks = async (socket: Socket): Promise<void> => {
+    public deleteUserFeedback = async (socket: Socket, data: any): Promise<void> => {
+        const { id } = data;
         try {
-            const feedbacks = await this.dailyUserFeedbackService.getUserFeedbacks();
-            socket.emit('getUserFeedbacksSuccess', feedbacks);
+            await this.dailyUserFeedbackService.deleteUserFeedback(id);
+            socket.emit('deleteUserFeedbackSuccess');
         } catch (error) {
-            socket.emit('getUserFeedbacksError', { error: error.message });
+            socket.emit('deleteUserFeedbackError', { error: error.message });
         }
     };
-
     public getUserFeedbackById = async (socket: Socket, data: any): Promise<void> => {
         const { id } = data;
         try {
@@ -44,7 +37,14 @@ class DailyUserFeedbackController {
             socket.emit('getUserFeedbackByIdError', { error: error.message });
         }
     };
-
+    public getUserFeedbacks = async (socket: Socket): Promise<void> => {
+        try {
+            const feedbacks = await this.dailyUserFeedbackService.getUserFeedbacks();
+            socket.emit('getUserFeedbacksSuccess', feedbacks);
+        } catch (error) {
+            socket.emit('getUserFeedbacksError', { error: error.message });
+        }
+    };
     public getUserFeedbacksByCondition = async (socket: Socket, data: any): Promise<void> => {
         const { category } = data;
         const { id: user_id } = data.user;
@@ -57,7 +57,6 @@ class DailyUserFeedbackController {
             socket.emit('getUserFeedbacksByConditionError', { message: error.message });
         }
     };
-
     public updateUserFeedback = async (socket: Socket, data: any): Promise<void> => {
         const { id, category } = data;
         try {
@@ -68,15 +67,10 @@ class DailyUserFeedbackController {
         }
     };
 
-    public deleteUserFeedback = async (socket: Socket, data: any): Promise<void> => {
-        const { id } = data;
-        try {
-            await this.dailyUserFeedbackService.deleteUserFeedback(id);
-            socket.emit('deleteUserFeedbackSuccess');
-        } catch (error) {
-            socket.emit('deleteUserFeedbackError', { error: error.message });
-        }
-    };
+    constructor() {
+        this.dailyUserFeedbackService = new DailyUserFeedbackService();
+        this.feedbackService = new FeedbackService();
+    }
 }
 
 export default DailyUserFeedbackController;

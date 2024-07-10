@@ -3,11 +3,6 @@ import DailyRolloutService from '../services/dailyRollout';
 
 class DailyRolloutController {
     private dailyRolloutService: DailyRolloutService;
-
-    constructor() {
-        this.dailyRolloutService = new DailyRolloutService();
-    }
-
     public createDailyRollout = async (socket: Socket, data: any): Promise<void> => {
         const { menu_type, date } = data;
         console.log('createDailyRollout', menu_type, date);
@@ -18,26 +13,15 @@ class DailyRolloutController {
             socket.emit('createDailyRolloutError', { error: error.message });
         }
     };
-
-    public getDailyRollouts = async (socket: Socket): Promise<void> => {
-        try {
-            const dailyRollouts = await this.dailyRolloutService.getDailyRollouts();
-            socket.emit('getDailyRolloutsSuccess', dailyRollouts);
-        } catch (error) {
-            socket.emit('getDailyRolloutsError', { error: error.message });
-        }
-    };
-
-    public getDailyRolloutById = async (socket: Socket, data: any): Promise<void> => {
+    public deleteDailyRollout = async (socket: Socket, data: any): Promise<void> => {
         const { id } = data;
         try {
-            const dailyRollout = await this.dailyRolloutService.getDailyRolloutById(id);
-            socket.emit('getDailyRolloutByIdSuccess', dailyRollout);
+            await this.dailyRolloutService.deleteDailyRollout(id);
+            socket.emit('deleteDailyRolloutSuccess');
         } catch (error) {
-            socket.emit('getDailyRolloutByIdError', { error: error.message });
+            socket.emit('deleteDailyRolloutError', { error: error.message });
         }
     };
-
     public getDailyRolloutByDate = async (socket: Socket, data: any): Promise<void> => {
         const { date } = data;
         try {
@@ -47,7 +31,23 @@ class DailyRolloutController {
             socket.emit('getDailyRolloutByDateError', { error: error.message });
         }
     };
-
+    public getDailyRolloutById = async (socket: Socket, data: any): Promise<void> => {
+        const { id } = data;
+        try {
+            const dailyRollout = await this.dailyRolloutService.getDailyRolloutById(id);
+            socket.emit('getDailyRolloutByIdSuccess', dailyRollout);
+        } catch (error) {
+            socket.emit('getDailyRolloutByIdError', { error: error.message });
+        }
+    };
+    public getDailyRollouts = async (socket: Socket): Promise<void> => {
+        try {
+            const dailyRollouts = await this.dailyRolloutService.getDailyRollouts();
+            socket.emit('getDailyRolloutsSuccess', dailyRollouts);
+        } catch (error) {
+            socket.emit('getDailyRolloutsError', { error: error.message });
+        }
+    };
     public updateDailyRollout = async (socket: Socket, data: any): Promise<void> => {
         const { menu_type, date } = data;
         try {
@@ -58,15 +58,9 @@ class DailyRolloutController {
         }
     };
 
-    public deleteDailyRollout = async (socket: Socket, data: any): Promise<void> => {
-        const { id } = data;
-        try {
-            await this.dailyRolloutService.deleteDailyRollout(id);
-            socket.emit('deleteDailyRolloutSuccess');
-        } catch (error) {
-            socket.emit('deleteDailyRolloutError', { error: error.message });
-        }
-    };
+    constructor() {
+        this.dailyRolloutService = new DailyRolloutService();
+    }
 }
 
 export default DailyRolloutController;

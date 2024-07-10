@@ -10,10 +10,22 @@ class UserService {
         }
     }
 
-    async getUsers() {
+    async deleteUser(id: string) {
         try {
-            const users = await User.findAll();
-            return users;
+            const user = await User.findByPk(id);
+            if (!user) {
+                throw new Error("User not found");
+            }
+            await user.destroy();
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getUserByEmployeeIdAndName(employeeId: number, name: string) {
+        try {
+            const user = await User.findOne({ where: { employeeId, name } });
+            return user;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -31,10 +43,10 @@ class UserService {
         }
     }
 
-    async getUserByEmployeeIdAndName(employeeId: number, name: string) {
+    async getUsers() {
         try {
-            const user = await User.findOne({ where: { employeeId, name } });
-            return user;
+            const users = await User.findAll();
+            return users;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -51,18 +63,6 @@ class UserService {
             user.password = password;
             await user.save();
             return user;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    async deleteUser(id: string) {
-        try {
-            const user = await User.findByPk(id);
-            if (!user) {
-                throw new Error("User not found");
-            }
-            await user.destroy();
         } catch (error) {
             throw new Error(error.message);
         }

@@ -5,7 +5,7 @@ const menuItemSocketHandler = new MenuItemSocketHandler();
 
 
 export default class MenuItemEventHandler {
-    socket
+    private socket
 
     constructor(socket: Socket) {
         this.socket = socket

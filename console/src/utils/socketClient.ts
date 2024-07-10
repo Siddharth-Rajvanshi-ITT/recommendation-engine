@@ -21,9 +21,9 @@ class SocketClient {
         });
     }
 
-    public on(event: string, callback: (...args: any[]) => void): void {
+    public disconnect(): void {
         if (this.socket) {
-            this.socket.on(event, callback);
+            this.socket.disconnect();
         }
     }
 
@@ -33,9 +33,9 @@ class SocketClient {
         }
     }
 
-    public disconnect(): void {
+    public on(event: string, callback: (...args: any[]) => void): void {
         if (this.socket) {
-            this.socket.disconnect();
+            this.socket.on(event, callback);
         }
     }
 }
