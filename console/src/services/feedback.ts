@@ -22,16 +22,16 @@ class FeedbackService {
         });
     }
 
-    public async getFeedbacks(): Promise<Feedback[]> {
+    public async deleteFeedback(feedback_id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getFeedbacks');
+            this.socket.emit('deleteFeedback', { feedback_id });
 
-            this.socket.on('getFeedbacksSuccess', (data: Feedback[]) => {
-                resolve(data);
+            this.socket.on('deleteFeedbackSuccess', () => {
+                resolve();
             });
 
-            this.socket.on('getFeedbacksError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch feedbacks'));
+            this.socket.on('deleteFeedbackError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete feedback'));
             });
         });
     }
@@ -50,6 +50,20 @@ class FeedbackService {
         });
     }
 
+    public async getFeedbacks(): Promise<Feedback[]> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getFeedbacks');
+
+            this.socket.on('getFeedbacksSuccess', (data: Feedback[]) => {
+                resolve(data);
+            });
+
+            this.socket.on('getFeedbacksError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch feedbacks'));
+            });
+        });
+    }
+
     public async updateFeedback(feedback_id: number, item_id: number, user_id: number, rating: number, comment: string, feedback_date: Date): Promise<Feedback> {
         return new Promise((resolve, reject) => {
             this.socket.emit('updateFeedback', { feedback_id, item_id, user_id, rating, comment, feedback_date });
@@ -60,20 +74,6 @@ class FeedbackService {
 
             this.socket.on('updateFeedbackError', (error: any) => {
                 reject(new Error(error.message || 'Failed to update feedback'));
-            });
-        });
-    }
-
-    public async deleteFeedback(feedback_id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteFeedback', { feedback_id });
-
-            this.socket.on('deleteFeedbackSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteFeedbackError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete feedback'));
             });
         });
     }

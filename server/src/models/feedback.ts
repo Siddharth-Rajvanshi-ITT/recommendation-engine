@@ -16,13 +16,13 @@ interface FeedbackAttributes {
 interface FeedbackCreationAttributes extends Optional<FeedbackAttributes, "feedback_id"> {}
 
 class Feedback extends Model<FeedbackAttributes, FeedbackCreationAttributes> implements FeedbackAttributes {
-    public feedback_id!: number;
-    public item_id!: number;
-    public user_id!: number;
-    public rating!: number;
     public comment!: string;
     public feedback_date!: Date;
+    public feedback_id!: number;
+    public item_id!: number;
+    public rating!: number;
     public sentiment_score: number;
+    public user_id!: number;
 }
 
 Feedback.init(

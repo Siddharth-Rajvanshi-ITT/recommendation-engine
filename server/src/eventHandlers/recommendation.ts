@@ -5,7 +5,7 @@ const recommendationSocketHandler = new RecommendationSocketHandler();
 
 
 export default class RecommendationEventHandler {
-    socket
+    private socket
 
     constructor(socket: Socket) {
         this.socket = socket

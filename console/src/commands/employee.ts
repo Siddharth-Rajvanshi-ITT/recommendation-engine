@@ -106,13 +106,13 @@ class EmployeeCommands {
     async giveFeedback(user: any) {
 
         try {
-
-            console.log('User:', user)
-
-            console.log('Inside giveFeedback')
             const currentDate = new Date().toISOString().split('T')[0];
-
             const dailyMenuItems = await dailyMenuItemService.getDailyMenuItemByDate(currentDate);
+
+            if (dailyMenuItems.length === 0) {
+                console.log('No menu items found for today');
+                return;
+            }
 
             console.log('--- Daily Menu Items ---', dailyMenuItems);
 
@@ -131,7 +131,7 @@ class EmployeeCommands {
             const employeeFeedback = await this.promptFeedback();
 
             console.log('selectedItem:', selectedItem)
-            
+
 
             const feedback = {
                 item_id: parseInt(selectedItem.id),
@@ -176,7 +176,7 @@ class EmployeeCommands {
         return menu_type;
     }
 
-    private async promptFeedback(): Promise<{rating: number, comment: string}> {
+    private async promptFeedback(): Promise<{ rating: number, comment: string }> {
         const feedback = await inquirer.prompt([
             { type: 'input', name: 'rating', message: 'Enter your rating (1-5):' },
             { type: 'input', name: 'comment', message: 'Enter your feedback:' },

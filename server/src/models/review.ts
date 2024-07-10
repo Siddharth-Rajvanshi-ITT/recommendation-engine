@@ -16,13 +16,13 @@ interface ReviewAttributes {
 interface ReviewCreationAttributes extends Optional<ReviewAttributes, "reviewId"> {}
 
 class Review extends Model<ReviewAttributes, ReviewCreationAttributes> implements ReviewAttributes {
-    public reviewId!: number;
-    public menuId!: number 
-    public userId!: number 
-    public foodItemId!: number;
-    public rating!: number;
     public comment!: string;
     public date!: Date;
+    public foodItemId!: number;
+    public menuId!: number
+    public rating!: number;
+    public reviewId!: number;
+    public userId!: number
 }
 
 Review.init(

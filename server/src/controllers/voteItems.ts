@@ -4,11 +4,6 @@ import MenuItemService from 'src/services/menuItem';
 
 class VoteItemController {
     private voteItemService: VoteItemService;
-
-    constructor() {
-        this.voteItemService = new VoteItemService();
-    }
-
     public createVoteItem = async (socket: Socket, data: any): Promise<void> => {
         const { menu_id, category, date } = data;
         try {
@@ -18,7 +13,24 @@ class VoteItemController {
             socket.emit('createVoteItemError', { error: error.message });
         }
     };
-
+    public deleteVoteItem = async (socket: Socket, data: any): Promise<void> => {
+        const { id } = data;
+        try {
+            await this.voteItemService.deleteVoteItem(+id);
+            socket.emit('deleteVoteItemSuccess');
+        } catch (error) {
+            socket.emit('deleteVoteItemError', { error: error.message });
+        }
+    };
+    public getVoteItemById = async (socket: Socket, data: any): Promise<void> => {
+        const { id } = data;
+        try {
+            const voteItem = await this.voteItemService.getVoteItemById(+id);
+            socket.emit('getVoteItemByIdSuccess', voteItem);
+        } catch (error) {
+            socket.emit('getVoteItemByIdError', { error: error.message });
+        }
+    };
     public getVoteItems = async (socket: Socket, data): Promise<void> => {
         const menuItemService = new MenuItemService();
         const { category } = data;
@@ -44,7 +56,6 @@ class VoteItemController {
             socket.emit('getVoteItemsError', { message: error.message });
         }
     };
-
     public getVoteItemsByDate = async (socket: Socket, data): Promise<void> => {
         const menuItemService = new MenuItemService();
         const { category, date } = data;
@@ -69,17 +80,6 @@ class VoteItemController {
             socket.emit('getVoteItemsByDateError', { message: error.message });
         }
     };
-
-    public getVoteItemById = async (socket: Socket, data: any): Promise<void> => {
-        const { id } = data;
-        try {
-            const voteItem = await this.voteItemService.getVoteItemById(+id);
-            socket.emit('getVoteItemByIdSuccess', voteItem);
-        } catch (error) {
-            socket.emit('getVoteItemByIdError', { error: error.message });
-        }
-    };
-
     public updateVoteItem = async (socket: Socket, data: any): Promise<void> => {
         const id = data.id;
         const { menu_id, date, votes } = data.voteItem;
@@ -91,17 +91,6 @@ class VoteItemController {
             socket.emit('updateVoteItemError', { error: error.message });
         }
     };
-
-    public deleteVoteItem = async (socket: Socket, data: any): Promise<void> => {
-        const { id } = data;
-        try {
-            await this.voteItemService.deleteVoteItem(+id);
-            socket.emit('deleteVoteItemSuccess');
-        } catch (error) {
-            socket.emit('deleteVoteItemError', { error: error.message });
-        }
-    };
-
     public vote = async (socket: Socket, data: any): Promise<void> => {
         console.log('vote event', data)
         const menu_id = data.menu_item.id;
@@ -115,6 +104,10 @@ class VoteItemController {
             socket.emit('voteError', { error: error.message });
         }
     };
+
+    constructor() {
+        this.voteItemService = new VoteItemService();
+    }
 }
 
 export default VoteItemController;

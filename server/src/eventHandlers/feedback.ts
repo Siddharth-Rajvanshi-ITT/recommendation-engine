@@ -4,7 +4,7 @@ import FeedbackSocketHandler from "../controllers/feedback";
 const feedbackSocketHandler = new FeedbackSocketHandler();
 
 export default class FeedbackEventHandler {
-    socket
+    private socket
 
     constructor(socket: Socket) {
         this.socket = socket

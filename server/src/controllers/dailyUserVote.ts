@@ -5,12 +5,6 @@ import VoteItemService from 'src/services/voteItem';
 class DailyUserVoteController {
     private DailyUserVoteService: DailyUserVoteService;
     private voteItemService: VoteItemService;
-
-    constructor() {
-        this.DailyUserVoteService = new DailyUserVoteService();
-        this.voteItemService = new VoteItemService();
-    }
-
     public createUserVote = async (socket: Socket, data: any): Promise<void> => {
         const { category } = data.menu_item;
         const { id: user_id } = data.user
@@ -25,16 +19,15 @@ class DailyUserVoteController {
             socket.emit('createUserVoteError', { message: error.message });
         }
     };
-
-    public getUserVotes = async (socket: Socket): Promise<void> => {
+    public deleteUserVote = async (socket: Socket, data: any): Promise<void> => {
+        const { id } = data;
         try {
-            const votes = await this.DailyUserVoteService.getUserVotes();
-            socket.emit('getUserVotesSuccess', votes);
+            await this.DailyUserVoteService.deleteUserVote(id);
+            socket.emit('deleteUserVoteSuccess');
         } catch (error) {
-            socket.emit('getUserVotesError', { error: error.message });
+            socket.emit('deleteUserVoteError', { error: error.message });
         }
     };
-
     public getUserVoteById = async (socket: Socket, data: any): Promise<void> => {
         const { id } = data;
         try {
@@ -44,7 +37,14 @@ class DailyUserVoteController {
             socket.emit('getUserVoteByIdError', { error: error.message });
         }
     };
-
+    public getUserVotes = async (socket: Socket): Promise<void> => {
+        try {
+            const votes = await this.DailyUserVoteService.getUserVotes();
+            socket.emit('getUserVotesSuccess', votes);
+        } catch (error) {
+            socket.emit('getUserVotesError', { error: error.message });
+        }
+    };
     public getUserVotesByCondition = async (socket: Socket, data: any): Promise<void> => {
         const { category } = data;
         const { id: user_id } = data.user;
@@ -56,7 +56,6 @@ class DailyUserVoteController {
             socket.emit('getUserVotesByConditionError', { message: error.message });
         }
     };
-
     public updateUserVote = async (socket: Socket, data: any): Promise<void> => {
         const { id, category } = data;
         try {
@@ -67,15 +66,10 @@ class DailyUserVoteController {
         }
     };
 
-    public deleteUserVote = async (socket: Socket, data: any): Promise<void> => {
-        const { id } = data;
-        try {
-            await this.DailyUserVoteService.deleteUserVote(id);
-            socket.emit('deleteUserVoteSuccess');
-        } catch (error) {
-            socket.emit('deleteUserVoteError', { error: error.message });
-        }
-    };
+    constructor() {
+        this.DailyUserVoteService = new DailyUserVoteService();
+        this.voteItemService = new VoteItemService();
+    }
 }
 
 export default DailyUserVoteController;

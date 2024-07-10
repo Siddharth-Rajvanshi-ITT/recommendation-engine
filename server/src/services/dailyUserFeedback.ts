@@ -1,6 +1,15 @@
 import DailyUserFeedback from "../models/dailyUserFeedback";
 
 class DailyUserFeedbackService {
+    private async checkUserFeedback(user_id: number, category: string, date: string) {
+        try {
+            const feedback = await DailyUserFeedback.findOne({ where: { user_id, category, date } });
+            return feedback;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     async createUserFeedback(user_id: number, category: string, date: string) {
         try {
             console.log('inside createUserFeedback')
@@ -20,10 +29,13 @@ class DailyUserFeedbackService {
         }
     }
 
-    async getUserFeedbacks() {
+    async deleteUserFeedback(id: number) {
         try {
-            const feedbacks = await DailyUserFeedback.findAll();
-            return feedbacks;
+            const feedback = await DailyUserFeedback.findByPk(id);
+            if (!feedback) {
+                throw new Error("Feedback not found");
+            }
+            await feedback.destroy();
         } catch (error) {
             throw new Error(error.message);
         }
@@ -36,6 +48,15 @@ class DailyUserFeedbackService {
                 throw new Error("Feedback not found");
             }
             return feedback;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getUserFeedbacks() {
+        try {
+            const feedbacks = await DailyUserFeedback.findAll();
+            return feedbacks;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -63,27 +84,6 @@ class DailyUserFeedbackService {
             }
             feedback.category = category;
             await feedback.save();
-            return feedback;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    async deleteUserFeedback(id: number) {
-        try {
-            const feedback = await DailyUserFeedback.findByPk(id);
-            if (!feedback) {
-                throw new Error("Feedback not found");
-            }
-            await feedback.destroy();
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    private async checkUserFeedback(user_id: number, category: string, date: string) {
-        try {
-            const feedback = await DailyUserFeedback.findOne({ where: { user_id, category, date } });
             return feedback;
         } catch (error) {
             throw new Error(error.message);

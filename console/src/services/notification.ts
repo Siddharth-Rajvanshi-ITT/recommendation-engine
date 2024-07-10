@@ -22,16 +22,16 @@ class NotificationService {
         });
     }
 
-    public async getNotifications(): Promise<Notification[]> {
+    public async deleteNotification(id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getNotifications');
+            this.socket.emit('deleteNotification', { id });
 
-            this.socket.on('getNotificationsSuccess', (data: Notification[]) => {
-                resolve(data);
+            this.socket.on('deleteNotificationSuccess', () => {
+                resolve();
             });
 
-            this.socket.on('getNotificationsError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch notifications'));
+            this.socket.on('deleteNotificationError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete notification'));
             });
         });
     }
@@ -46,6 +46,20 @@ class NotificationService {
 
             this.socket.on('getNotificationByIdError', (error: any) => {
                 reject(new Error(error.message || 'Failed to fetch notification'));
+            });
+        });
+    }
+
+    public async getNotifications(): Promise<Notification[]> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getNotifications');
+
+            this.socket.on('getNotificationsSuccess', (data: Notification[]) => {
+                resolve(data);
+            });
+
+            this.socket.on('getNotificationsError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch notifications'));
             });
         });
     }
@@ -74,20 +88,6 @@ class NotificationService {
 
             this.socket.on('updateNotificationError', (error: any) => {
                 reject(new Error(error.message || 'Failed to update notification'));
-            });
-        });
-    }
-
-    public async deleteNotification(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteNotification', { id });
-
-            this.socket.on('deleteNotificationSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteNotificationError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete notification'));
             });
         });
     }

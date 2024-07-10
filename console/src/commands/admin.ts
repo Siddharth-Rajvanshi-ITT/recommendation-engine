@@ -84,7 +84,7 @@ class AdminCommands {
 
         try {
             const menuItem = await menuItemService.createMenuItem(newItem);
-            console.log('Menu item added successfully:', menuItem);
+            console.log('Menu item added successfully');
         } catch (error: any) {
             console.error('Failed to add menu item:', error.message);
         }

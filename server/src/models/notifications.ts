@@ -12,10 +12,10 @@ interface NotificationAttributes {
 interface NotificationCreationAttributes extends Optional<NotificationAttributes, "notification_id"> { }
 
 class Notification extends Model<NotificationAttributes, NotificationCreationAttributes> implements NotificationAttributes {
-    public notification_id!: number;
-    public notification_type!: 'new_breakfast_menu' | 'new_lunch_menu' | 'new_dinner_menu' | 'item_added' | 'item_status_change';
     public notification_data!: object;
+    public notification_id!: number;
     public notification_timestamp!: string;
+    public notification_type!: 'new_breakfast_menu' | 'new_lunch_menu' | 'new_dinner_menu' | 'item_added' | 'item_status_change';
 }
 
 Notification.init(

@@ -4,7 +4,7 @@ import DailyRolloutSocketHandler from "../controllers/dailyRollout";
 const dailyRolloutSocketHandler = new DailyRolloutSocketHandler();
 
 export default class DailyRolloutEventHandler {
-    socket: Socket;
+    private socket: Socket;
 
     constructor(socket: Socket) {
         this.socket = socket;

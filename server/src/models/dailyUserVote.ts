@@ -11,10 +11,10 @@ interface DailyUserVoteAttributes {
 interface DailyUserVoteCreationAttributes extends Optional<DailyUserVoteAttributes, "id"> {}
 
 class DailyUserVote extends Model<DailyUserVoteAttributes, DailyUserVoteCreationAttributes> implements DailyUserVoteAttributes {
-    public id!: number;
-    public user_id!: number;
     public category!: string;
     public date!: string;
+    public id!: number;
+    public user_id!: number;
 }
 
 DailyUserVote.init(

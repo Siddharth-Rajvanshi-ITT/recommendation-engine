@@ -22,16 +22,30 @@ class DailyMenuItemService {
         });
     }
 
-    public async getDailyMenuItems(): Promise<DailyMenuItem[]> {
+    public async deleteDailyMenuItem(id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getDailyMenuItems');
+            this.socket.emit('deleteDailyMenuItem', { id });
 
-            this.socket.on('getDailyMenuItemsSuccess', (data: DailyMenuItem[]) => {
+            this.socket.on('deleteDailyMenuItemSuccess', () => {
+                resolve();
+            });
+
+            this.socket.on('deleteDailyMenuItemError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete daily menu item'));
+            });
+        });
+    }
+
+    public async getDailyMenuItemByDate(date: string): Promise<DailyMenuItem[]> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getDailyMenuItemByDate', { date });
+
+            this.socket.on('getDailyMenuItemByDateSuccess', (data: DailyMenuItem[]) => {
                 resolve(data);
             });
 
-            this.socket.on('getDailyMenuItemsError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch daily menu items'));
+            this.socket.on('getDailyMenuItemByDateError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch daily menu item'));
             });
         });
     }
@@ -50,17 +64,16 @@ class DailyMenuItemService {
         });
     }
 
-
-    public async getDailyMenuItemByDate(date: string): Promise<DailyMenuItem> {
+    public async getDailyMenuItems(): Promise<DailyMenuItem[]> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getDailyMenuItemByDate', { date });
+            this.socket.emit('getDailyMenuItems');
 
-            this.socket.on('getDailyMenuItemByDateSuccess', (data: DailyMenuItem) => {
+            this.socket.on('getDailyMenuItemsSuccess', (data: DailyMenuItem[]) => {
                 resolve(data);
             });
 
-            this.socket.on('getDailyMenuItemByDateError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch daily menu item'));
+            this.socket.on('getDailyMenuItemsError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch daily menu items'));
             });
         });
     }
@@ -75,20 +88,6 @@ class DailyMenuItemService {
 
             this.socket.on('updateDailyMenuItemError', (error: any) => {
                 reject(new Error(error.message || 'Failed to update daily menu item'));
-            });
-        });
-    }
-
-    public async deleteDailyMenuItem(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteDailyMenuItem', { id });
-
-            this.socket.on('deleteDailyMenuItemSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteDailyMenuItemError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete daily menu item'));
             });
         });
     }

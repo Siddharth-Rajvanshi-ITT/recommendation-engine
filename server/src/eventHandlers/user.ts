@@ -4,7 +4,7 @@ import UserSocketHandler from "../controllers/user";
 const userSocketHandler = new UserSocketHandler();
 
 export default class UserEventHandler {
-    socket
+    private socket
 
     constructor(socket: Socket) {
         this.socket = socket
