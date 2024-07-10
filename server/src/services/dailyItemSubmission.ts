@@ -24,10 +24,24 @@ class DailyItemSubmissionService {
         }
     }
 
-    async getDailyItemSubmissions() {
+    async deleteDailyItemSubmission(id: number) {
         try {
-            const dailyItemSubmissions = await DailyItemSubmission.findAll();
-            return dailyItemSubmissions;
+            const dailyItemSubmission = await DailyItemSubmission.findByPk(id);
+            if (!dailyItemSubmission) {
+                throw new Error("DailyItemSubmission not found");
+            }
+            await dailyItemSubmission.destroy();
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getDailyItemSubmissionByDate(date: string) {
+        console.log('getDailyItemSubmissionByDate', date);
+        try {
+            const dailyItemSubmission = await DailyItemSubmission.findOne({ where: { date } });
+            console.log('dailyItemSubmission', dailyItemSubmission);
+            return dailyItemSubmission;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -45,12 +59,10 @@ class DailyItemSubmissionService {
         }
     }
 
-    async getDailyItemSubmissionByDate(date: string) {
-        console.log('getDailyItemSubmissionByDate', date);
+    async getDailyItemSubmissions() {
         try {
-            const dailyItemSubmission = await DailyItemSubmission.findOne({ where: { date } });
-            console.log('dailyItemSubmission', dailyItemSubmission);
-            return dailyItemSubmission;
+            const dailyItemSubmissions = await DailyItemSubmission.findAll();
+            return dailyItemSubmissions;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -69,18 +81,6 @@ class DailyItemSubmissionService {
             }
 
             return dailyItemSubmission;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    async deleteDailyItemSubmission(id: number) {
-        try {
-            const dailyItemSubmission = await DailyItemSubmission.findByPk(id);
-            if (!dailyItemSubmission) {
-                throw new Error("DailyItemSubmission not found");
-            }
-            await dailyItemSubmission.destroy();
         } catch (error) {
             throw new Error(error.message);
         }

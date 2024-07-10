@@ -1,10 +1,9 @@
 export class SentimentAnalyzer {
-    private positiveWords: Set<string>;
-    private negativeWords: Set<string>;
-    private neutralWords: Set<string>;
     private intensifiers: Set<string>;
+    private negativeWords: Set<string>;
     private negators: Set<string>;
-
+    private neutralWords: Set<string>;
+    private positiveWords: Set<string>;
     constructor() {
         this.positiveWords = new Set([
             "good", "great", "excellent", "amazing", "delicious", "tasty", "love",

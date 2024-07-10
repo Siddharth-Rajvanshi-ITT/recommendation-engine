@@ -17,10 +17,13 @@ class FeedbackService {
         }
     }
 
-    async getFeedbacks() {
+    async deleteFeedback(feedback_id: number) {
         try {
-            const feedbacks = await Feedback.findAll();
-            return feedbacks;
+            const feedback = await Feedback.findByPk(feedback_id);
+            if (!feedback) {
+                throw new Error("Feedback not found");
+            }
+            await feedback.destroy();
         } catch (error) {
             throw new Error(error.message);
         }
@@ -33,6 +36,15 @@ class FeedbackService {
                 throw new Error("Feedback not found");
             }
             return feedback;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getFeedbacks() {
+        try {
+            const feedbacks = await Feedback.findAll();
+            return feedbacks;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -71,18 +83,6 @@ class FeedbackService {
             feedback.feedback_date = feedback_date;
             await feedback.save();
             return feedback;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    async deleteFeedback(feedback_id: number) {
-        try {
-            const feedback = await Feedback.findByPk(feedback_id);
-            if (!feedback) {
-                throw new Error("Feedback not found");
-            }
-            await feedback.destroy();
         } catch (error) {
             throw new Error(error.message);
         }

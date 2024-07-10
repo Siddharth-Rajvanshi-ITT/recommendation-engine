@@ -4,7 +4,7 @@ import DailyItemSubmissionController from "../controllers/dailyItemSubmission";
 const dailyItemSubmissionController = new DailyItemSubmissionController();
 
 export default class DailyItemSubmissionEventHandler {
-    socket: Socket;
+    private socket: Socket;
 
     constructor(socket: Socket) {
         this.socket = socket;

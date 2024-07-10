@@ -13,12 +13,12 @@ interface MenuItemAttributes {
 interface MenuItemCreationAttributes extends Optional<MenuItemAttributes, "item_id"> {}
 
 class MenuItem extends Model<MenuItemAttributes, MenuItemCreationAttributes> implements MenuItemAttributes {
+    public availability_status!: 'available' | 'unavailable';
+    public category!: 'breakfast' | 'lunch' | 'dinner';
+    public description!: string;
     public item_id!: number;
     public name!: string;
-    public description!: string;
-    public category!: 'breakfast' | 'lunch' | 'dinner';
     public price!: number;
-    public availability_status!: 'available' | 'unavailable';
 }
 
 MenuItem.init(

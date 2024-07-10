@@ -22,16 +22,16 @@ class DailyMenuService {
         });
     }
 
-    public async getDailyMenus(): Promise<DailyMenu[]> {
+    public async deleteDailyMenu(id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getDailyMenus');
+            this.socket.emit('deleteDailyMenu', { id });
 
-            this.socket.on('getDailyMenusSuccess', (data: DailyMenu[]) => {
-                resolve(data);
+            this.socket.on('deleteDailyMenuSuccess', () => {
+                resolve();
             });
 
-            this.socket.on('getDailyMenusError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch daily menus'));
+            this.socket.on('deleteDailyMenuError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete daily menu'));
             });
         });
     }
@@ -50,6 +50,20 @@ class DailyMenuService {
         });
     }
 
+    public async getDailyMenus(): Promise<DailyMenu[]> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getDailyMenus');
+
+            this.socket.on('getDailyMenusSuccess', (data: DailyMenu[]) => {
+                resolve(data);
+            });
+
+            this.socket.on('getDailyMenusError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch daily menus'));
+            });
+        });
+    }
+
     public async updateDailyMenu(id: number, dailyMenu: DailyMenu): Promise<DailyMenu> {
         return new Promise((resolve, reject) => {
             this.socket.emit('updateDailyMenu', { id, ...dailyMenu });
@@ -60,20 +74,6 @@ class DailyMenuService {
 
             this.socket.on('updateDailyMenuError', (error: any) => {
                 reject(new Error(error.message || 'Failed to update daily menu'));
-            });
-        });
-    }
-
-    public async deleteDailyMenu(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteDailyMenu', { id });
-
-            this.socket.on('deleteDailyMenuSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteDailyMenuError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete daily menu'));
             });
         });
     }

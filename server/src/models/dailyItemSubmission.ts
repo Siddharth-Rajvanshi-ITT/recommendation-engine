@@ -12,11 +12,11 @@ interface DailyItemSubmissionAttributes {
 interface DailyItemSubmissionCreationAttributes extends Optional<DailyItemSubmissionAttributes, "id"> {}
 
 class DailyItemSubmission extends Model<DailyItemSubmissionAttributes, DailyItemSubmissionCreationAttributes> implements DailyItemSubmissionAttributes {
-    public id!: number;
     public breakfast!: boolean;
-    public lunch!: boolean;
-    public dinner!: boolean;
     public date!: string;
+    public dinner!: boolean;
+    public id!: number;
+    public lunch!: boolean;
 }
 
 DailyItemSubmission.init(

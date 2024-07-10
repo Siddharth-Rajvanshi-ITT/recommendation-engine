@@ -5,7 +5,7 @@ const authSocketHandler = new AuthSocketHandler();
 
 
 export default class AuthEventHandler {
-    socket
+    private socket
 
     constructor(socket: Socket) {
         this.socket = socket

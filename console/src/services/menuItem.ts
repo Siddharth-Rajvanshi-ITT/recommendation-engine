@@ -22,16 +22,16 @@ class MenuItemService {
         });
     }
 
-    public async getMenuItems(): Promise<MenuItem[]> {
+    public async deleteMenuItem(id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getMenuItems');
+            this.socket.emit('deleteMenuItem', { id });
 
-            this.socket.on('getMenuItemsSuccess', (data: MenuItem[]) => {
-                resolve(data);
+            this.socket.on('deleteMenuItemSuccess', () => {
+                resolve();
             });
 
-            this.socket.on('getMenuItemsError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch menu items'));
+            this.socket.on('deleteMenuItemError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete menu item'));
             });
         });
     }
@@ -64,6 +64,20 @@ class MenuItemService {
         });
     }
 
+    public async getMenuItems(): Promise<MenuItem[]> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getMenuItems');
+
+            this.socket.on('getMenuItemsSuccess', (data: MenuItem[]) => {
+                resolve(data);
+            });
+
+            this.socket.on('getMenuItemsError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch menu items'));
+            });
+        });
+    }
+
     public async updateMenuItem(id: number, menuItem: any): Promise<MenuItem> {
         return new Promise((resolve, reject) => {
             console.log(menuItem)
@@ -75,20 +89,6 @@ class MenuItemService {
 
             this.socket.on('updateMenuItemError', (error: any) => {
                 reject(new Error(error.message || 'Failed to update menu item'));
-            });
-        });
-    }
-
-    public async deleteMenuItem(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteMenuItem', { id });
-
-            this.socket.on('deleteMenuItemSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteMenuItemError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete menu item'));
             });
         });
     }

@@ -24,10 +24,24 @@ class DailyRolloutService {
         }
     }
 
-    async getDailyRollouts() {
+    async deleteDailyRollout(id: number) {
         try {
-            const dailyRollouts = await DailyRollout.findAll();
-            return dailyRollouts;
+            const dailyRollout = await DailyRollout.findByPk(id);
+            if (!dailyRollout) {
+                throw new Error("DailyRollout not found");
+            }
+            await dailyRollout.destroy();
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    async getDailyRolloutByDate(date: string) {
+        console.log('getDailyRolloutByDate', date);
+        try {
+            const dailyRollout = await DailyRollout.findOne({ where: { date } });
+            console.log('dailyRollout', dailyRollout);
+            return dailyRollout;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -45,12 +59,10 @@ class DailyRolloutService {
         }
     }
 
-    async getDailyRolloutByDate(date: string) {
-        console.log('getDailyRolloutByDate', date);
+    async getDailyRollouts() {
         try {
-            const dailyRollout = await DailyRollout.findOne({ where: { date } });
-            console.log('dailyRollout', dailyRollout);
-            return dailyRollout;
+            const dailyRollouts = await DailyRollout.findAll();
+            return dailyRollouts;
         } catch (error) {
             throw new Error(error.message);
         }
@@ -69,18 +81,6 @@ class DailyRolloutService {
             }
 
             return dailyRollout;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    async deleteDailyRollout(id: number) {
-        try {
-            const dailyRollout = await DailyRollout.findByPk(id);
-            if (!dailyRollout) {
-                throw new Error("DailyRollout not found");
-            }
-            await dailyRollout.destroy();
         } catch (error) {
             throw new Error(error.message);
         }

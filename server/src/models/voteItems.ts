@@ -12,13 +12,12 @@ interface VoteItemAttributes {
 interface VoteItemCreationAttributes extends Optional<VoteItemAttributes, "id" | "votes"> {}
 
 class VoteItem extends Model<VoteItemAttributes, VoteItemCreationAttributes> implements VoteItemAttributes {
-    public id!: number;
-    public menu_id!: number;
     public category!: string;
     public date!: string;
-    public votes!: number;
-
+    public id!: number;
     public incrementVote!: () => Promise<void>;
+    public menu_id!: number;
+    public votes!: number;
 }
 
 VoteItem.init(

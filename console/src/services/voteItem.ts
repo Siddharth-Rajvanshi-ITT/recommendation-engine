@@ -22,6 +22,34 @@ class VoteItemService {
         });
     }
 
+    public async deleteVoteItem(id: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('deleteVoteItem', { id });
+
+            this.socket.on('deleteVoteItemSuccess', () => {
+                resolve();
+            });
+
+            this.socket.on('deleteVoteItemError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete vote item'));
+            });
+        });
+    }
+
+    public async getVoteItemById(id: number): Promise<VoteItem> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getVoteItemById', { id });
+
+            this.socket.on('getVoteItemByIdSuccess', (data: VoteItem) => {
+                resolve(data);
+            });
+
+            this.socket.on('getVoteItemByIdError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch vote item'));
+            });
+        });
+    }
+
     public async getVoteItems(category: string): Promise<VoteItem[]> {
         return new Promise((resolve, reject) => {
             this.socket.emit('getVoteItems', { category });
@@ -49,17 +77,17 @@ class VoteItemService {
             });
         });
     }
-    
-    public async getVoteItemById(id: number): Promise<VoteItem> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getVoteItemById', { id });
 
-            this.socket.on('getVoteItemByIdSuccess', (data: VoteItem) => {
+    public async isAlreadyVoted(category: string, user: any): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getUserVotesByCondition', { category, user });
+
+            this.socket.on('getUserVotesByConditionSuccess', (data: boolean) => {
                 resolve(data);
             });
 
-            this.socket.on('getVoteItemByIdError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch vote item'));
+            this.socket.on('getUserVotesByConditionError', (error: any) => {
+                reject(new Error(error.message || 'Failed to check if already voted'));
             });
         });
     }
@@ -78,20 +106,6 @@ class VoteItemService {
         });
     }
 
-    public async deleteVoteItem(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteVoteItem', { id });
-
-            this.socket.on('deleteVoteItemSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteVoteItemError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete vote item'));
-            });
-        });
-    }
-
     public async vote(menu_item: number, user: any): Promise<VoteItem> {
         return new Promise((resolve, reject) => {
             this.socket.emit('createUserVote', { menu_item, user });
@@ -103,20 +117,6 @@ class VoteItemService {
 
             this.socket.on('createUserVoteError', (error: any) => {
                 reject(new Error(error.message || 'Failed to vote'));
-            });
-        });
-    }
-
-    public async isAlreadyVoted(category: string, user: any): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getUserVotesByCondition', { category, user });
-
-            this.socket.on('getUserVotesByConditionSuccess', (data: boolean) => {
-                resolve(data);
-            });
-
-            this.socket.on('getUserVotesByConditionError', (error: any) => {
-                reject(new Error(error.message || 'Failed to check if already voted'));
             });
         });
     }

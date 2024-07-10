@@ -11,10 +11,10 @@ interface DailyUserFeedbackAttributes {
 interface DailyUserFeedbackCreationAttributes extends Optional<DailyUserFeedbackAttributes, "id"> {}
 
 class DailyUserFeedback extends Model<DailyUserFeedbackAttributes, DailyUserFeedbackCreationAttributes> implements DailyUserFeedbackAttributes {
-    public id!: number;
-    public user_id!: number;
     public category!: string;
     public date!: string;
+    public id!: number;
+    public user_id!: number;
 }
 
 DailyUserFeedback.init(

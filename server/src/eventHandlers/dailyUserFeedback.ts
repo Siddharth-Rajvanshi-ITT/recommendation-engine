@@ -4,7 +4,7 @@ import DailyUserFeedbackSocketHandler from "../controllers/dailyUserFeedback";
 const dailyUserFeedbackSocketHandler = new DailyUserFeedbackSocketHandler();
 
 export default class DailyUserFeedbackEventHandler {
-    socket: Socket;
+    private socket: Socket;
 
     constructor(socket: Socket) {
         this.socket = socket;
