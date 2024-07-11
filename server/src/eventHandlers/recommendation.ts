@@ -11,10 +11,21 @@ export default class RecommendationEventHandler {
         this.socket = socket
     }
 
-    listen(){
+    listen() {
         this.socket.on("getRecommendedItems", async (data) => {
             const { menu_type } = data
             await recommendationSocketHandler.getRecommendedMenuItems(this.socket, menu_type);
+        });
+
+        this.socket.on("getDiscardableItems", async (data) => {
+            const { menu_type } = data
+            await recommendationSocketHandler.getDiscardableMenuItems(this.socket, menu_type);
+        });
+
+        this.socket.on("discardItem", async (data) => {
+            console.log(data)
+            const { items: selectedItems } = data
+            await recommendationSocketHandler.discardMenuItems(this.socket, selectedItems);
         });
     }
 }

@@ -27,6 +27,7 @@ class ChefCommands {
                     choices: [
                         'Propose Daily Menu',
                         'View top voted items',
+                        'View discardable items',
                         'Submit Daily Menu',
                         'Exit'
                     ]
@@ -42,6 +43,9 @@ class ChefCommands {
                     break;
                 case 'Submit Daily Menu':
                     await this.submitDailyMenu(io);
+                    break;
+                case 'View discardable items':
+                    await this.viewDiscardableItems(io);
                     break;
                 case 'Exit': console.log('exiting');
                     process.exit(0);
@@ -380,6 +384,110 @@ class ChefCommands {
                 reject(new Error(error.message));
             });
         });
+    }
+
+    private async viewDiscardableItems(io: Socket) {
+        const menu_type = await this.promptMenuType();
+
+        const choice = await this.promptDiscardChoice(io, menu_type);
+
+        if (choice === 'Exit') {
+            return;
+        }
+
+        const selectedItem = await this.promptDiscardItems(io, menu_type);
+
+        if (!selectedItem) {
+            console.log('No discardable items found');
+            return;
+        }
+
+        if (choice === 'Discard Item') {
+            console.log('Discarding items...', selectedItem);
+            io.emit('discardItem', { items: selectedItem });
+        } else if (choice === 'Ask employees for feedback') {
+            io.emit('canCreateDiscardRollOut');
+            await this.discardRollout(io, selectedItem);
+        }
+
+    }
+
+    private async discardRollout(io: Socket, selectedItem: any) {
+        return new Promise<void>((resolve, reject) => {
+            io.off('canCreateDiscardRollOutSuccess')
+
+
+            io.on('canCreateDiscardRollOutSuccess', async (canCreateDiscardRollOut) => {
+                if (canCreateDiscardRollOut) {
+                    io.emit('createDiscardRollOut', { items: selectedItem });
+                    console.log('Discard rollout created successfully');
+                } else {
+                    console.log('Cannot create discard rollout as it has already been created for this month');
+                }
+                resolve();
+            })
+        })
+    }
+
+    private async promptDiscardChoice(io: Socket, menu_type: string): Promise<string> {
+        const { choice } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'choice',
+                message: 'Choose an action:',
+                choices: [
+                    'Discard Item',
+                    'Ask employees for feedback',
+                    'Exit',
+                ]
+            }
+        ]);
+
+        return choice;
+    }
+
+    private async promptDiscardItems(io: Socket, menu_type: string): Promise<number[] | null> {
+        const menuItems: any = await recommendationService.getDiscardableItems(io, menu_type);
+
+        if (!menuItems.length) {
+            return null;
+        }
+
+        console.log('Discardable items for', menu_type, 'are:')
+        console.table(menuItems);
+
+        const selectedItems = await this.promptUserForSelection(menuItems);
+
+        return selectedItems;
+    }
+
+    private async promptUserForSelection(menuItems: any[]): Promise<number[]> {
+
+        const choices = menuItems.map((item: any) => ({
+            name: `${item.name} - ₹${item.price}`,
+            value: item
+        }));
+
+
+        const { selectedItems } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'selectedItems',
+                message: 'Select up to 3 items:',
+                choices: choices,
+                validate: function (answer) {
+                    if (answer.length > 3) {
+                        return 'You can select up to 3 items only.';
+                    }
+                    if (answer.length < 1) {
+                        return 'You must choose at least one item';
+                    }
+                    return true;
+                }
+            }
+        ]);
+
+        return selectedItems;
     }
 
 }
