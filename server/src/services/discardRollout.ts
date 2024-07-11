@@ -45,8 +45,8 @@ class DiscardRollOutService {
 
     async getDiscardRollOutByDate() {
         try {
-            const discardRollOuts = await DiscardRollOut.findOne({where: {date: new Date().toISOString().slice(0, 7)}});
-            return discardRollOuts;
+            const discardRollOut = await DiscardRollOut.findOne({where: {date: new Date().toISOString().slice(0, 7)}});
+            return discardRollOut;
         } catch (error) {
             throw new Error(error.message);
         }

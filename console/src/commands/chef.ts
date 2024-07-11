@@ -2,6 +2,7 @@ import inquirer from 'inquirer';
 import { Socket } from 'socket.io-client';
 import RecommendationService from '../services/recommendation.js';
 import VoteItemService from '../services/voteItem.js';
+import DiscardFeedbackService from '../services/discardFeedback.js';
 
 const recommendationService = new RecommendationService();
 class ChefCommands {
@@ -27,8 +28,9 @@ class ChefCommands {
                     choices: [
                         'Propose Daily Menu',
                         'View top voted items',
-                        'View discardable items',
                         'Submit Daily Menu',
+                        'View discardable items',
+                        'View discard item feedback',
                         'Exit'
                     ]
                 }
@@ -46,6 +48,9 @@ class ChefCommands {
                     break;
                 case 'View discardable items':
                     await this.viewDiscardableItems(io);
+                    break;
+                case 'View discard item feedback':
+                    await this.viewDiscardItemFeedback(io);
                     break;
                 case 'Exit': console.log('exiting');
                     process.exit(0);
@@ -413,9 +418,8 @@ class ChefCommands {
     }
 
     private async discardRollout(io: Socket, selectedItem: any) {
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve) => {
             io.off('canCreateDiscardRollOutSuccess')
-
 
             io.on('canCreateDiscardRollOutSuccess', async (canCreateDiscardRollOut) => {
                 if (canCreateDiscardRollOut) {
@@ -488,6 +492,14 @@ class ChefCommands {
         ]);
 
         return selectedItems;
+    }
+
+    private async viewDiscardItemFeedback(io: Socket) {
+        const discardFeedbackService = new DiscardFeedbackService(io);
+        const discardItemFeedbacks = await discardFeedbackService.getMonthlyDiscardFeedbacks();
+
+        console.log('Discard item feedbacks are:');
+        console.table(discardItemFeedbacks);
     }
 
 }

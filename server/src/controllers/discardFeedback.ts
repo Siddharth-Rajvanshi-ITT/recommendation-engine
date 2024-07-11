@@ -6,18 +6,29 @@ class DiscardFeedbackController {
     private discardFeedbackService: DiscardFeedbackService;
 
     public createDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
-        const { id: user_id } = data.user;
-        const { item_id, question1, question2, question3 } = data;
-        const date = new Date().toISOString().split('T')[0];
+        const { item_id, user_id, answer1, answer2, answer3 } = data;
+        const date = new Date().toISOString().slice(0, 7);
 
         try {
-            const feedback = await this.discardFeedbackService.createDiscardFeedback(user_id, item_id, date, question1, question2, question3);
+            const feedback = await this.discardFeedbackService.createDiscardFeedback(user_id, item_id, date, answer1, answer2, answer3);
 
             socket.emit('createDiscardFeedbackSuccess', feedback);
         } catch (error) {
             socket.emit('createDiscardFeedbackError', { message: error.message });
         }
     };
+
+    public checkDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
+        const { item_id } = data;
+        const { id: user_id } = data.user;
+        const date = new Date().toISOString().slice(0, 7);
+        try {
+            const isAlreadyProvidedFeedback = await this.discardFeedbackService.getDiscardFeedbacksByCondition(user_id, item_id, date);
+            socket.emit('checkDiscardFeedbackSuccess', isAlreadyProvidedFeedback);
+        } catch (error) {
+            socket.emit('checkDiscardFeedbackError', { message: error.message });
+        }
+    }
 
     public deleteDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
         const { id } = data;
@@ -48,10 +59,19 @@ class DiscardFeedbackController {
         }
     };
 
+    public getMonthlyDiscardFeedbacks = async (socket: Socket): Promise<void> => {
+        try {
+            const feedbacks = await this.discardFeedbackService.getMonthlyDiscardFeedbacks();
+            socket.emit('getMonthlyDiscardFeedbacksSuccess', feedbacks);
+        } catch (error) {
+            socket.emit('getMonthlyDiscardFeedbacksError', { error: error.message });
+        }
+    };
+
     public getDiscardFeedbacksByCondition = async (socket: Socket, data: any): Promise<void> => {
-        const { item_id } = data;
-        const { id: user_id } = data.user;
-        const date = new Date().toISOString().split('T')[0];
+        console.log('getDiscardFeedbacksByCondition', data)
+        const { item_id, user_id } = data;
+        const date = new Date().toISOString().slice(0, 7);
         try {
             const isAlreadyProvidedFeedback = await this.discardFeedbackService.getDiscardFeedbacksByCondition(user_id, item_id, date);
             socket.emit('getDiscardFeedbacksByConditionSuccess', isAlreadyProvidedFeedback);

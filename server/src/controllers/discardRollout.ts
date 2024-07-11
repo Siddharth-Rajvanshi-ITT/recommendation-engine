@@ -53,12 +53,21 @@ class DiscardRollOutController {
         }
     };
 
-    public getDiscardRollOutByDate = async (socket: Socket): Promise<void> => {
+    public canCreateDiscardRollOut = async (socket: Socket): Promise<void> => {
         try {
-            const discardRollOuts = await this.discardRollOutService.getDiscardRollOutByDate();
-            !discardRollOuts ? socket.emit('canCreateDiscardRollOutSuccess', true) : socket.emit('canCreateDiscardRollOutSuccess', false);
+            const discardRollOut = await this.discardRollOutService.getDiscardRollOutByDate();
+            !discardRollOut ? socket.emit('canCreateDiscardRollOutSuccess', true) : socket.emit('canCreateDiscardRollOutSuccess', false);
         } catch (error) {
             socket.emit('canCreateDiscardRollOutError', { error: error.message });
+        }
+    };
+
+    public getDiscardRollOutByDate = async (socket: Socket): Promise<void> => {
+        try {
+            const discardRollOut = await this.discardRollOutService.getDiscardRollOutByDate();
+            socket.emit('getDiscardRollOutByDateSuccess', discardRollOut);
+        } catch (error) {
+            socket.emit('getDiscardRollOutByDateError', { error: error.message });
         }
     };
 
