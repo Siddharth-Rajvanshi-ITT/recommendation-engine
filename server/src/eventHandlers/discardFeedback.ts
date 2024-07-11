@@ -17,6 +17,9 @@ export default class DiscardFeedbackEventHandler {
         this.socket.on("getDiscardFeedbacks", async () => {
             await discardFeedbackController.getDiscardFeedbacks(this.socket);
         });
+        this.socket.on("getMonthlyDiscardFeedbacks", async () => {
+            await discardFeedbackController.getMonthlyDiscardFeedbacks(this.socket);
+        });
         this.socket.on("getDiscardFeedbackById", async (data) => {
             await discardFeedbackController.getDiscardFeedbackById(this.socket, data);
         });

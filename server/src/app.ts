@@ -15,6 +15,7 @@ import DailyUserVoteEventHandler from "./eventHandlers/dailyUserVote";
 import DailyItemSubmissionEventHandler from "./eventHandlers/dailyItemSubmission";
 import DailyUserFeedbackEventHandler from "./eventHandlers/dailyUserFeedback";
 import DiscardRollOutEventHandler from "./eventHandlers/discardRollout";
+import DiscardFeedbackEventHandler from "./eventHandlers/discardFeedback";
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -34,6 +35,7 @@ io.on("connection", (socket: Socket) => {
     const dailyUserVoteEventHandler = new DailyUserVoteEventHandler(socket);
     const dailyItemSubmissionEventHandler = new DailyItemSubmissionEventHandler(socket);
     const dailyUserFeedbackEventHandler = new DailyUserFeedbackEventHandler(socket);
+    const discadFeedbackEventHandler = new DiscardFeedbackEventHandler(socket);
     const discardRollOutEventHandler = new DiscardRollOutEventHandler(socket);
 
     console.log(`New client connected: ${socket.id}`);
@@ -50,6 +52,7 @@ io.on("connection", (socket: Socket) => {
     dailyUserVoteEventHandler.listen()
     dailyItemSubmissionEventHandler.listen()
     dailyUserFeedbackEventHandler.listen()
+    discadFeedbackEventHandler.listen()
     discardRollOutEventHandler.listen()
 
     socket.on("disconnect", () => {
