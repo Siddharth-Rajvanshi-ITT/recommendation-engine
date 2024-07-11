@@ -56,6 +56,28 @@ class DiscardFeedbackService {
         }
     }
 
+    async getMonthlyDiscardFeedbacks() {
+        const date = new Date().toISOString().slice(0, 7);
+        try {
+            const feedbacks = await DiscardFeedback.findAll({where: {date}});
+
+
+            return feedbacks.map((feedback) => {
+                return {
+                    id: feedback.id,
+                    user_id: feedback.user_id,
+                    item_id: feedback.item_id,
+                    date: feedback.date,
+                    question1: feedback.question1,
+                    question2: feedback.question2,
+                    question3: feedback.question3,
+                }
+            });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     async getDiscardFeedbacksByCondition(user_id: number, item_id: number, date: string) {
         try {
             const feedback = await DiscardFeedback.findOne({ where: { user_id, item_id, date } });

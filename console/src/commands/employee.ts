@@ -8,6 +8,8 @@ import { Notification } from '../types/notification.js';
 import { Socket } from 'socket.io-client';
 import DailyMenuItemService from '../services/dailyMenuItem.js';
 import DailyFeedbackService from '../services/dailyUserFeedback.js';
+import DiscardRollOutService from '../services/discardRollout.js';
+import DiscardFeedbackService from '../services/discardFeedback.js';
 
 let menuItemService: MenuItemService
 let notificationService: NotificationService
@@ -15,6 +17,8 @@ let feedbackService: FeedbackService
 let voteItemService: VoteItemService
 let dailyMenuItemService: DailyMenuItemService
 let dailyFeedbackService: DailyFeedbackService
+let discardRollOutService: DiscardRollOutService
+let discardFeedbackService: DiscardFeedbackService
 
 
 class EmployeeCommands {
@@ -41,6 +45,8 @@ class EmployeeCommands {
         voteItemService = new VoteItemService(io)
         dailyMenuItemService = new DailyMenuItemService(io)
         dailyFeedbackService = new DailyFeedbackService(io)
+        discardRollOutService = new DiscardRollOutService(io)
+        discardFeedbackService = new DiscardFeedbackService(io)
 
         while (true) {
             const answer = await inquirer.prompt([
@@ -53,6 +59,7 @@ class EmployeeCommands {
                         { name: 'Give Feedback', value: 'giveFeedback' },
                         { name: 'View Notifications', value: 'viewNotifications' },
                         { name: 'Choose Items for Upcoming Meal', value: 'chooseItemsForUpcomingMeal' },
+                        { name: 'Give feedback for discarding item', value: 'discardItemFeedback' },
                         { name: 'Exit', value: 'exit' },
                     ],
                 },
@@ -70,6 +77,9 @@ class EmployeeCommands {
                     break;
                 case 'chooseItemsForUpcomingMeal':
                     await this.chooseItemsForUpcomingMeal(user);
+                    break;
+                case 'discardItemFeedback':
+                    await this.discardItemFeedback(user);
                     break;
                 case 'exit': console.log('exiting');
                     process.exit(0);
@@ -319,6 +329,49 @@ class EmployeeCommands {
         ]);
 
         return selectedItem;
+    }
+
+    private async discardItemFeedback(user: any) {
+        const discardRollOutItem = await this.showDiscardMenuItem();
+        const isAlreadyProvidedFeedback = await discardFeedbackService.getDiscardFeedbacksByCondition(discardRollOutItem.item_id, user.id);
+
+        if (isAlreadyProvidedFeedback) {
+            console.log(`You have already provided feedback for ${discardRollOutItem.item_name}`);
+            return;
+        }
+
+        const answers = await this.promptDiscardItemFeedback(discardRollOutItem);
+        await discardFeedbackService.createDiscardFeedback(discardRollOutItem.item_id, user.id, answers.dislikeAboutItem, answers.desiredTaste, answers.momsRecipe);
+    }
+
+    private async showDiscardMenuItem() {
+        const discardRollOutItem = await discardRollOutService.getDiscardRollOutByDate() as any;
+        console.log('--- This Month\'s Discard Roll Out Item ---');
+        console.table([discardRollOutItem])
+
+        return discardRollOutItem;
+    }
+
+    private async promptDiscardItemFeedback(discardRollOutItem: any) {
+        const answers = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'dislikeAboutItem',
+                message: `Q1. What didn’t you like about ${discardRollOutItem.item_name}?\n>`,
+            },
+            {
+                type: 'input',
+                name: 'desiredTaste',
+                message: `Q2. How would you like ${discardRollOutItem.item_name} to taste?\n>`,
+            },
+            {
+                type: 'input',
+                name: 'momsRecipe',
+                message: 'Q3. Share your mom’s recipe.\n>',
+            },
+        ]);
+
+        return answers
     }
 
 
