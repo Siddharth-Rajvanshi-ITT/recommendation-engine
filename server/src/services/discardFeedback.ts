@@ -56,6 +56,20 @@ class DiscardFeedbackService {
         }
     }
 
+    async getDiscardFeedbacksByCondition(user_id: number, item_id: number, date: string) {
+        try {
+            const feedback = await DiscardFeedback.findOne({ where: { user_id, item_id, date } });
+
+            if (feedback) {
+                return true;
+            }
+
+            return false;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     async getMonthlyDiscardFeedbacks() {
         const date = new Date().toISOString().slice(0, 7);
         try {
@@ -73,20 +87,6 @@ class DiscardFeedbackService {
                     question3: feedback.question3,
                 }
             });
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    async getDiscardFeedbacksByCondition(user_id: number, item_id: number, date: string) {
-        try {
-            const feedback = await DiscardFeedback.findOne({ where: { user_id, item_id, date } });
-
-            if (feedback) {
-                return true;
-            }
-
-            return false;
         } catch (error) {
             throw new Error(error.message);
         }

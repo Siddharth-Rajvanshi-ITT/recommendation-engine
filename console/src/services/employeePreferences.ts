@@ -1,7 +1,7 @@
 import { Socket } from "socket.io-client";
 
 class EmployeePreferencesService {
-    socket;
+    private socket;
 
     constructor(socket: Socket) {
         this.socket = socket;

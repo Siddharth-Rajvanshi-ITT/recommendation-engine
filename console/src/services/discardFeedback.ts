@@ -21,30 +21,16 @@ class DiscardFeedbackService {
         });
     }
 
-    public async getDiscardFeedbacks() {
+    public async deleteDiscardFeedback(id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getDiscardFeedbacks');
+            this.socket.emit('deleteDiscardFeedback', { id });
 
-            this.socket.on('getDiscardFeedbacksSuccess', (data) => {
-                resolve(data);
+            this.socket.on('deleteDiscardFeedbackSuccess', () => {
+                resolve();
             });
 
-            this.socket.on('getDiscardFeedbacksError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch discard feedbacks'));
-            });
-        });
-    }
-
-    public async getMonthlyDiscardFeedbacks() {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getMonthlyDiscardFeedbacks');
-
-            this.socket.on('getMonthlyDiscardFeedbacksSuccess', (data) => {
-                resolve(data);
-            });
-
-            this.socket.on('getMonthlyDiscardFeedbacksError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch discard feedbacks'));
+            this.socket.on('deleteDiscardFeedbackError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete discard feedback'));
             });
         });
     }
@@ -63,6 +49,20 @@ class DiscardFeedbackService {
         });
     }
 
+    public async getDiscardFeedbacks() {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getDiscardFeedbacks');
+
+            this.socket.on('getDiscardFeedbacksSuccess', (data) => {
+                resolve(data);
+            });
+
+            this.socket.on('getDiscardFeedbacksError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch discard feedbacks'));
+            });
+        });
+    }
+
     public async getDiscardFeedbacksByCondition(item_id: number, user_id: number) {
         return new Promise((resolve, reject) => {
             this.socket.emit('getDiscardFeedbacksByCondition', { item_id, user_id });
@@ -77,6 +77,20 @@ class DiscardFeedbackService {
         });
     }
 
+    public async getMonthlyDiscardFeedbacks() {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getMonthlyDiscardFeedbacks');
+
+            this.socket.on('getMonthlyDiscardFeedbacksSuccess', (data) => {
+                resolve(data);
+            });
+
+            this.socket.on('getMonthlyDiscardFeedbacksError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch discard feedbacks'));
+            });
+        });
+    }
+
     public async updateDiscardFeedback(id: number, item_id: number, user_id: number, date: string, answer1: string, answer2: string, answer3: string) {
         return new Promise((resolve, reject) => {
             this.socket.emit('updateDiscardFeedback', { id, item_id, user_id, date, answer1, answer2, answer3 });
@@ -87,20 +101,6 @@ class DiscardFeedbackService {
 
             this.socket.on('updateDiscardFeedbackError', (error: any) => {
                 reject(new Error(error.message || 'Failed to update discard feedback'));
-            });
-        });
-    }
-
-    public async deleteDiscardFeedback(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteDiscardFeedback', { id });
-
-            this.socket.on('deleteDiscardFeedbackSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteDiscardFeedbackError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete discard feedback'));
             });
         });
     }

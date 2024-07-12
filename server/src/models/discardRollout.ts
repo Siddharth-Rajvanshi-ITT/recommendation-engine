@@ -12,11 +12,11 @@ interface DiscardRollOutAttributes {
 interface DiscardRollOutCreationAttributes extends Optional<DiscardRollOutAttributes, "id"> {}
 
 class DiscardRollOut extends Model<DiscardRollOutAttributes, DiscardRollOutCreationAttributes> implements DiscardRollOutAttributes {
+    public date!: string;
     public id!: number;
     public item_id!: number;
     public item_name!: string;
     public price!: number;
-    public date!: string;
 }
 
 DiscardRollOut.init(

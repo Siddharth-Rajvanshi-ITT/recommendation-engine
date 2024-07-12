@@ -7,20 +7,6 @@ class DiscardRollOutService {
         this.socket = socket;
     }
 
-    public async createDiscardRollOut(item_id: number, item_name: string, price: number, date: string){
-        return new Promise((resolve, reject) => {
-            this.socket.emit('createDiscardRollOut', { item_id, item_name, price, date });
-
-            this.socket.on('createDiscardRollOutSuccess', (data) => {
-                resolve(data);
-            });
-
-            this.socket.on('createDiscardRollOutError', (error: any) => {
-                reject(new Error(error.message || 'Failed to create discard rollout'));
-            });
-        });
-    }
-
     public async canCreateDiscardRollOut(): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.socket.emit('canCreateDiscardRollOut');
@@ -35,30 +21,30 @@ class DiscardRollOutService {
         });
     }
 
-    public async getDiscardRollOuts(){
+    public async createDiscardRollOut(item_id: number, item_name: string, price: number, date: string){
         return new Promise((resolve, reject) => {
-            this.socket.emit('getDiscardRollOuts');
+            this.socket.emit('createDiscardRollOut', { item_id, item_name, price, date });
 
-            this.socket.on('getDiscardRollOutsSuccess', (data) => {
+            this.socket.on('createDiscardRollOutSuccess', (data) => {
                 resolve(data);
             });
 
-            this.socket.on('getDiscardRollOutsError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch discard rollouts'));
+            this.socket.on('createDiscardRollOutError', (error: any) => {
+                reject(new Error(error.message || 'Failed to create discard rollout'));
             });
         });
     }
 
-    public async getDiscardRollOutById(id: number){
+    public async deleteDiscardRollOut(id: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.socket.emit('getDiscardRollOutById', { id });
+            this.socket.emit('deleteDiscardRollOut', { id });
 
-            this.socket.on('getDiscardRollOutByIdSuccess', (data) => {
-                resolve(data);
+            this.socket.on('deleteDiscardRollOutSuccess', () => {
+                resolve();
             });
 
-            this.socket.on('getDiscardRollOutByIdError', (error: any) => {
-                reject(new Error(error.message || 'Failed to fetch discard rollout by id'));
+            this.socket.on('deleteDiscardRollOutError', (error: any) => {
+                reject(new Error(error.message || 'Failed to delete discard rollout'));
             });
         });
     }
@@ -77,6 +63,34 @@ class DiscardRollOutService {
         });
     }
 
+    public async getDiscardRollOutById(id: number){
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getDiscardRollOutById', { id });
+
+            this.socket.on('getDiscardRollOutByIdSuccess', (data) => {
+                resolve(data);
+            });
+
+            this.socket.on('getDiscardRollOutByIdError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch discard rollout by id'));
+            });
+        });
+    }
+
+    public async getDiscardRollOuts(){
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getDiscardRollOuts');
+
+            this.socket.on('getDiscardRollOutsSuccess', (data) => {
+                resolve(data);
+            });
+
+            this.socket.on('getDiscardRollOutsError', (error: any) => {
+                reject(new Error(error.message || 'Failed to fetch discard rollouts'));
+            });
+        });
+    }
+
     public async updateDiscardRollOut(id: number, item_id: number, item_name: string, price: number, date: string) {
         return new Promise((resolve, reject) => {
             this.socket.emit('updateDiscardRollOut', { id, item_id, item_name, price, date });
@@ -87,20 +101,6 @@ class DiscardRollOutService {
 
             this.socket.on('updateDiscardRollOutError', (error: any) => {
                 reject(new Error(error.message || 'Failed to update discard rollout'));
-            });
-        });
-    }
-
-    public async deleteDiscardRollOut(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('deleteDiscardRollOut', { id });
-
-            this.socket.on('deleteDiscardRollOutSuccess', () => {
-                resolve();
-            });
-
-            this.socket.on('deleteDiscardRollOutError', (error: any) => {
-                reject(new Error(error.message || 'Failed to delete discard rollout'));
             });
         });
     }

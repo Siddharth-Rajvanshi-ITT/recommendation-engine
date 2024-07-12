@@ -10,6 +10,37 @@ const employeePreferencesService = new EmployeePreferencesService()
 
 
 class NotificationService {
+    private sortPreferences(employeePreferences, menuItems) {
+        return new Promise((resolve) => {
+            const sortItems = (a, b) => {
+                if (a.mealType !== b.mealType) {
+                    console.log('Sorting by meal type')
+                    if (a.mealType === employeePreferences.mealType) return -1;
+                    if (b.mealType === employeePreferences.mealType) return 1;
+                }
+                if (a.spiceLevel !== b.spiceLevel) {
+                    console.log('Sorting by spice level')
+                    if (a.spiceLevel === employeePreferences.spiceLevel) return -1;
+                    if (b.spiceLevel === employeePreferences.spiceLevel) return 1;
+                }
+                if (a.region !== b.region) {
+                    console.log('Sorting by category')
+                    if (a.region === employeePreferences.category) return -1;
+                    if (b.region === employeePreferences.category) return 1;
+                }
+                if (a.sweetTooth !== b.sweetTooth) {
+                    console.log('Sorting by sweet tooth')
+                    if (a.sweetTooth === employeePreferences.sweetTooth) return -1;
+                    if (b.sweetTooth === employeePreferences.sweetTooth) return 1;
+                }
+                return 0;
+            };
+    
+            const sortedItems = menuItems.sort(sortItems);  
+            resolve(sortedItems);
+        });
+    }
+
     async createNotification(notification_type: 'new_breakfast_menu' | 'new_lunch_menu' | 'new_dinner_menu' | 'item_added' | 'item_status_change', notification_data: any, notification_timestamp: string) {
         try {
             const notification = await Notification.create({
@@ -80,38 +111,6 @@ class NotificationService {
             throw new Error(error.message);
         }
     }
-
-    private sortPreferences(employeePreferences, menuItems) {
-        return new Promise((resolve) => {
-            const sortItems = (a, b) => {
-                if (a.mealType !== b.mealType) {
-                    console.log('Sorting by meal type')
-                    if (a.mealType === employeePreferences.mealType) return -1;
-                    if (b.mealType === employeePreferences.mealType) return 1;
-                }
-                if (a.spiceLevel !== b.spiceLevel) {
-                    console.log('Sorting by spice level')
-                    if (a.spiceLevel === employeePreferences.spiceLevel) return -1;
-                    if (b.spiceLevel === employeePreferences.spiceLevel) return 1;
-                }
-                if (a.region !== b.region) {
-                    console.log('Sorting by category')
-                    if (a.region === employeePreferences.category) return -1;
-                    if (b.region === employeePreferences.category) return 1;
-                }
-                if (a.sweetTooth !== b.sweetTooth) {
-                    console.log('Sorting by sweet tooth')
-                    if (a.sweetTooth === employeePreferences.sweetTooth) return -1;
-                    if (b.sweetTooth === employeePreferences.sweetTooth) return 1;
-                }
-                return 0;
-            };
-    
-            const sortedItems = menuItems.sort(sortItems);  
-            resolve(sortedItems);
-        });
-    }
-    
 
     async getNotificationById(notification_id: number) {
         try {

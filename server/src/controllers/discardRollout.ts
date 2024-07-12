@@ -3,11 +3,14 @@ import DiscardRollOutService from '../services/discardRollout';
 
 class DiscardRollOutController {
     private discardRollOutService: DiscardRollOutService;
-
-    constructor() {
-        this.discardRollOutService = new DiscardRollOutService();
-    }
-
+    public canCreateDiscardRollOut = async (socket: Socket): Promise<void> => {
+        try {
+            const discardRollOut = await this.discardRollOutService.getDiscardRollOutByDate();
+            !discardRollOut ? socket.emit('canCreateDiscardRollOutSuccess', true) : socket.emit('canCreateDiscardRollOutSuccess', false);
+        } catch (error) {
+            socket.emit('canCreateDiscardRollOutError', { error: error.message });
+        }
+    };
     public createDiscardRollOut = async (socket: Socket, data: any): Promise<void> => {
         const date = new Date().toISOString().slice(0, 7);
         const { id: item_id, name: item_name, price } = data.items;
@@ -21,7 +24,6 @@ class DiscardRollOutController {
             socket.emit('createDiscardRollOutError', { message: error.message });
         }
     };
-
     public deleteDiscardRollOut = async (socket: Socket, data: any): Promise<void> => {
         const { id } = data;
 
@@ -32,7 +34,14 @@ class DiscardRollOutController {
             socket.emit('deleteDiscardRollOutError', { error: error.message });
         }
     };
-
+    public getDiscardRollOutByDate = async (socket: Socket): Promise<void> => {
+        try {
+            const discardRollOut = await this.discardRollOutService.getDiscardRollOutByDate();
+            socket.emit('getDiscardRollOutByDateSuccess', discardRollOut);
+        } catch (error) {
+            socket.emit('getDiscardRollOutByDateError', { error: error.message });
+        }
+    };
     public getDiscardRollOutById = async (socket: Socket, data: any): Promise<void> => {
         const { id } = data;
 
@@ -43,7 +52,6 @@ class DiscardRollOutController {
             socket.emit('getDiscardRollOutByIdError', { error: error.message });
         }
     };
-
     public getDiscardRollOuts = async (socket: Socket): Promise<void> => {
         try {
             const discardRollOuts = await this.discardRollOutService.getDiscardRollOuts();
@@ -52,25 +60,6 @@ class DiscardRollOutController {
             socket.emit('getDiscardRollOutsError', { error: error.message });
         }
     };
-
-    public canCreateDiscardRollOut = async (socket: Socket): Promise<void> => {
-        try {
-            const discardRollOut = await this.discardRollOutService.getDiscardRollOutByDate();
-            !discardRollOut ? socket.emit('canCreateDiscardRollOutSuccess', true) : socket.emit('canCreateDiscardRollOutSuccess', false);
-        } catch (error) {
-            socket.emit('canCreateDiscardRollOutError', { error: error.message });
-        }
-    };
-
-    public getDiscardRollOutByDate = async (socket: Socket): Promise<void> => {
-        try {
-            const discardRollOut = await this.discardRollOutService.getDiscardRollOutByDate();
-            socket.emit('getDiscardRollOutByDateSuccess', discardRollOut);
-        } catch (error) {
-            socket.emit('getDiscardRollOutByDateError', { error: error.message });
-        }
-    };
-
     public updateDiscardRollOut = async (socket: Socket, data: any): Promise<void> => {
         const { id, item_id, item_name, price, date } = data;
 
@@ -81,6 +70,10 @@ class DiscardRollOutController {
             socket.emit('updateDiscardRollOutError', { error: error.message });
         }
     };
+
+    constructor() {
+        this.discardRollOutService = new DiscardRollOutService();
+    }
 }
 
 export default DiscardRollOutController;

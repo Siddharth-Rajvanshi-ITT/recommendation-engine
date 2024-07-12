@@ -22,6 +22,15 @@ class DiscardRollOutService {
         }
     }
 
+    async getDiscardRollOutByDate() {
+        try {
+            const discardRollOut = await DiscardRollOut.findOne({where: {date: new Date().toISOString().slice(0, 7)}});
+            return discardRollOut;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
     async getDiscardRollOutById(id: number) {
         try {
             const discardRollOut = await DiscardRollOut.findByPk(id);
@@ -42,16 +51,6 @@ class DiscardRollOutService {
             throw new Error(error.message);
         }
     }
-
-    async getDiscardRollOutByDate() {
-        try {
-            const discardRollOut = await DiscardRollOut.findOne({where: {date: new Date().toISOString().slice(0, 7)}});
-            return discardRollOut;
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
 
     async updateDiscardRollOut(id: number, item_id: number, item_name: string, price: number, date: string) {
         try {
