@@ -10,6 +10,7 @@ import DailyMenuItemService from '../services/dailyMenuItem.js';
 import DailyFeedbackService from '../services/dailyUserFeedback.js';
 import DiscardRollOutService from '../services/discardRollout.js';
 import DiscardFeedbackService from '../services/discardFeedback.js';
+import EmployeePreferencesService from '../services/employeePreferences.js';
 
 let menuItemService: MenuItemService
 let notificationService: NotificationService
@@ -19,6 +20,7 @@ let dailyMenuItemService: DailyMenuItemService
 let dailyFeedbackService: DailyFeedbackService
 let discardRollOutService: DiscardRollOutService
 let discardFeedbackService: DiscardFeedbackService
+let employeePreferencesService: EmployeePreferencesService
 
 
 class EmployeeCommands {
@@ -47,6 +49,7 @@ class EmployeeCommands {
         dailyFeedbackService = new DailyFeedbackService(io)
         discardRollOutService = new DiscardRollOutService(io)
         discardFeedbackService = new DiscardFeedbackService(io)
+        employeePreferencesService = new EmployeePreferencesService(io);
 
         while (true) {
             const answer = await inquirer.prompt([
@@ -55,6 +58,7 @@ class EmployeeCommands {
                     name: 'command',
                     message: 'Choose an action:',
                     choices: [
+                        { name: 'Update your profile preferences', value: 'updateProfile' },
                         { name: 'View Menu', value: 'viewMenu' },
                         { name: 'Give Feedback', value: 'giveFeedback' },
                         { name: 'View Notifications', value: 'viewNotifications' },
@@ -66,6 +70,9 @@ class EmployeeCommands {
             ]);
 
             switch (answer.command) {
+                case 'updateProfile':
+                    await this.updateProfile(user);
+                    break;
                 case 'viewMenu':
                     await this.viewMenu();
                     break;
@@ -73,7 +80,7 @@ class EmployeeCommands {
                     await this.giveFeedback(user);
                     break;
                 case 'viewNotifications':
-                    await this.viewNotifications();
+                    await this.viewNotifications(user);
                     break;
                 case 'chooseItemsForUpcomingMeal':
                     await this.chooseItemsForUpcomingMeal(user);
@@ -173,19 +180,6 @@ class EmployeeCommands {
         return selectedItem;
     }
 
-    private async promptMenuType(): Promise<string> {
-        const { menu_type } = await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'menu_type',
-                message: 'Select menu type:',
-                choices: ['breakfast', 'lunch', 'dinner']
-            },
-        ]);
-
-        return menu_type;
-    }
-
     private async promptFeedback(): Promise<{ rating: number, comment: string }> {
         const feedback = await inquirer.prompt([
             { type: 'input', name: 'rating', message: 'Enter your rating (1-5):' },
@@ -194,10 +188,10 @@ class EmployeeCommands {
         return feedback;
     }
 
-    public async viewNotifications(): Promise<void> {
+    public async viewNotifications(user: any): Promise<void> {
         try {
-            const currentDate = this.getCurrentDate();
-            const notifications = await this.fetchNotifications(currentDate);
+            const notifications = await this.fetchNotifications(user);
+            console.log('--- Notifications ---', notifications)
             const rolledOutItems = this.processNotifications(notifications);
 
             if (rolledOutItems.length === 0) return;
@@ -217,9 +211,9 @@ class EmployeeCommands {
         return menu_date;
     }
 
-    private async fetchNotifications(date: string): Promise<Notification[]> {
+    private async fetchNotifications(user: any): Promise<Notification[]> {
         try {
-            const notifications = await notificationService.getNotificationsByDate(date);
+            const notifications = await notificationService.getNotificationsByDate(user);
             if (!notifications || notifications.length === 0) {
                 console.log('No notifications found');
                 return [];
@@ -230,11 +224,12 @@ class EmployeeCommands {
         }
     }
 
-    private processNotifications(notifications: Notification[]): any[] {
-        return notifications.map((notification: Notification) => {
+    private processNotifications(notifications: any): any[] {
+        return notifications.map((notification: any) => {
             return notification.notification_data.map((menuItem: any) => {
                 return {
                     notification_type: notification.notification_type,
+                    recommendation: notification.recommendation,
                     item_details: {
                         id: menuItem.item_id,
                         name: menuItem.name,
@@ -259,8 +254,7 @@ class EmployeeCommands {
 
     public async chooseItemsForUpcomingMeal(user: any): Promise<void> {
         try {
-            const currentDate = this.getCurrentDate();
-            const notifications = await this.fetchNotifications(currentDate);
+            const notifications = await this.fetchNotifications(user);
             const rolledOutItems = this.processNotifications(notifications);
 
             if (rolledOutItems.length === 0) {
@@ -372,6 +366,60 @@ class EmployeeCommands {
         ]);
 
         return answers
+    }
+
+    private async updateProfile(user: any) {
+        const preferences = await this.promptPreferences();
+        await employeePreferencesService.updateEmployeePreference(user.id, preferences.mealType, preferences.spiceLevel, preferences.category, preferences.sweetTooth);
+    }
+
+    private async promptPreferences() {
+        const preferences = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'mealType',
+                message: 'Please select meal type:',
+                choices: [
+                    { name: 'System Default', value: 'system_default' },
+                    { name: 'Vegetarian', value: 'vegetarian' },
+                    { name: 'Non Vegetarian', value: 'non-vegetarian' },
+                    { name: 'Eggetarian', value: 'eggetarian' }
+                ],
+            },
+            {
+                type: 'list',
+                name: 'spiceLevel',
+                message: 'Please select your spice level:',
+                choices: [
+                    { name: 'System Default', value: 'system_default' },
+                    { name: 'High', value: 'high' },
+                    { name: 'Medium', value: 'medium' },
+                    { name: 'Low', value: 'low' }
+                ],
+            },
+            {
+                type: 'list',
+                name: 'category',
+                message: 'What do you prefer most?',
+                choices: [
+                    { name: 'System Default', value: 'system_default' },
+                    { name: 'North Indian', value: 'north indian' },
+                    { name: 'South Indian', value: 'south indian' },
+                    { name: 'Other', value: 'other' }
+                ],
+            },
+            {
+                type: 'list',
+                name: 'sweetTooth',
+                message: 'Do you have a sweet tooth?',
+                choices: [
+                    { name: 'System Default', value: false },
+                    { name: 'Yes', value: true },
+                    { name: 'No', value: false },
+                ],
+            },
+        ]);
+        return preferences;
     }
 
 
