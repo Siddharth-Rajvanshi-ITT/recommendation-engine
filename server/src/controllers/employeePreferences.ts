@@ -23,7 +23,14 @@ class EmployeePreferencesController {
             socket.emit('deleteEmployeePreferenceError', { error: error.message });
         }
     };
-
+    public getAllEmployeePreferences = async (socket: Socket): Promise<void> => {
+        try {
+            const preferences = await this.employeePreferencesService.getAllEmployeePreferences();
+            socket.emit('getAllEmployeePreferencesSuccess', preferences);
+        } catch (error) {
+            socket.emit('getAllEmployeePreferencesError', { error: error.message });
+        }
+    };
     public getEmployeePreference = async (socket: Socket, data: any): Promise<void> => {
         const { userId } = data;
         try {
@@ -33,16 +40,6 @@ class EmployeePreferencesController {
             socket.emit('getEmployeePreferenceError', { error: error.message });
         }
     };
-
-    public getAllEmployeePreferences = async (socket: Socket): Promise<void> => {
-        try {
-            const preferences = await this.employeePreferencesService.getAllEmployeePreferences();
-            socket.emit('getAllEmployeePreferencesSuccess', preferences);
-        } catch (error) {
-            socket.emit('getAllEmployeePreferencesError', { error: error.message });
-        }
-    };
-
     public updateEmployeePreference = async (socket: Socket, data: any): Promise<void> => {
         const { userId, mealType, spiceLevel, category, sweetTooth } = data;
         try {

@@ -111,7 +111,6 @@ class VoteItemService {
             this.socket.emit('createUserVote', { menu_item, user });
 
             this.socket.on('createUserVoteSuccess', (data: VoteItem) => {
-                this.socket.emit
                 resolve(data);
             });
 

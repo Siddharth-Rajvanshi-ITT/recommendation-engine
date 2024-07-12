@@ -14,13 +14,13 @@ interface DiscardFeedbackAttributes {
 interface DiscardFeedbackCreationAttributes extends Optional<DiscardFeedbackAttributes, "id"> {}
 
 class DiscardFeedback extends Model<DiscardFeedbackAttributes, DiscardFeedbackCreationAttributes> implements DiscardFeedbackAttributes {
+    public date!: string;
     public id!: number;
     public item_id!: number;
-    public user_id!: number;
-    public date!: string;
     public question1!: string;
     public question2!: string;
     public question3!: string;
+    public user_id!: number;
 }
 
 DiscardFeedback.init(

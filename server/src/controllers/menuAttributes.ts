@@ -23,7 +23,14 @@ class MenuAttributesController {
             socket.emit('deleteMenuAttributeError', { error: error.message });
         }
     };
-
+    public getAllMenuAttributes = async (socket: Socket): Promise<void> => {
+        try {
+            const menuAttributes = await this.menuAttributesService.getAllMenuAttributes();
+            socket.emit('getAllMenuAttributesSuccess', menuAttributes);
+        } catch (error) {
+            socket.emit('getAllMenuAttributesError', { error: error.message });
+        }
+    };
     public getMenuAttribute = async (socket: Socket, data: any): Promise<void> => {
         const { menuId } = data;
         try {
@@ -33,16 +40,6 @@ class MenuAttributesController {
             socket.emit('getMenuAttributeError', { error: error.message });
         }
     };
-
-    public getAllMenuAttributes = async (socket: Socket): Promise<void> => {
-        try {
-            const menuAttributes = await this.menuAttributesService.getAllMenuAttributes();
-            socket.emit('getAllMenuAttributesSuccess', menuAttributes);
-        } catch (error) {
-            socket.emit('getAllMenuAttributesError', { error: error.message });
-        }
-    };
-
     public updateMenuAttribute = async (socket: Socket, data: any): Promise<void> => {
         const { menuId, mealType, spiceLevel, category, sweetTooth } = data;
         try {

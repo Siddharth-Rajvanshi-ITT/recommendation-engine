@@ -4,7 +4,17 @@ import DiscardFeedbackService from '../services/discardFeedback';
 
 class DiscardFeedbackController {
     private discardFeedbackService: DiscardFeedbackService;
-
+    public checkDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
+        const { item_id } = data;
+        const { id: user_id } = data.user;
+        const date = new Date().toISOString().slice(0, 7);
+        try {
+            const isAlreadyProvidedFeedback = await this.discardFeedbackService.getDiscardFeedbacksByCondition(user_id, item_id, date);
+            socket.emit('checkDiscardFeedbackSuccess', isAlreadyProvidedFeedback);
+        } catch (error) {
+            socket.emit('checkDiscardFeedbackError', { message: error.message });
+        }
+    }
     public createDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
         const { item_id, user_id, answer1, answer2, answer3 } = data;
         const date = new Date().toISOString().slice(0, 7);
@@ -17,19 +27,6 @@ class DiscardFeedbackController {
             socket.emit('createDiscardFeedbackError', { message: error.message });
         }
     };
-
-    public checkDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
-        const { item_id } = data;
-        const { id: user_id } = data.user;
-        const date = new Date().toISOString().slice(0, 7);
-        try {
-            const isAlreadyProvidedFeedback = await this.discardFeedbackService.getDiscardFeedbacksByCondition(user_id, item_id, date);
-            socket.emit('checkDiscardFeedbackSuccess', isAlreadyProvidedFeedback);
-        } catch (error) {
-            socket.emit('checkDiscardFeedbackError', { message: error.message });
-        }
-    }
-
     public deleteDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
         const { id } = data;
         try {
@@ -58,16 +55,6 @@ class DiscardFeedbackController {
             socket.emit('getDiscardFeedbacksError', { error: error.message });
         }
     };
-
-    public getMonthlyDiscardFeedbacks = async (socket: Socket): Promise<void> => {
-        try {
-            const feedbacks = await this.discardFeedbackService.getMonthlyDiscardFeedbacks();
-            socket.emit('getMonthlyDiscardFeedbacksSuccess', feedbacks);
-        } catch (error) {
-            socket.emit('getMonthlyDiscardFeedbacksError', { error: error.message });
-        }
-    };
-
     public getDiscardFeedbacksByCondition = async (socket: Socket, data: any): Promise<void> => {
         console.log('getDiscardFeedbacksByCondition', data)
         const { item_id, user_id } = data;
@@ -79,7 +66,14 @@ class DiscardFeedbackController {
             socket.emit('getDiscardFeedbacksByConditionError', { message: error.message });
         }
     };
-
+    public getMonthlyDiscardFeedbacks = async (socket: Socket): Promise<void> => {
+        try {
+            const feedbacks = await this.discardFeedbackService.getMonthlyDiscardFeedbacks();
+            socket.emit('getMonthlyDiscardFeedbacksSuccess', feedbacks);
+        } catch (error) {
+            socket.emit('getMonthlyDiscardFeedbacksError', { error: error.message });
+        }
+    };
     public updateDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
         const { id, question1, question2, question3 } = data;
         try {
