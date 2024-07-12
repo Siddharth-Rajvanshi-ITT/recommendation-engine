@@ -3,12 +3,30 @@ import MenuItemService from 'src/services/menuItem';
 import RecommendationEngineService from 'src/services/recommendationEngine';
 
 class RecommendationController {
-    private recommendationEngineService: RecommendationEngineService;
     private menuItemsService: MenuItemService;
-
+    private recommendationEngineService: RecommendationEngineService;
     constructor() {
         this.recommendationEngineService = new RecommendationEngineService();
         this.menuItemsService = new MenuItemService();
+    }
+
+    public async discardMenuItems(socket: Socket, selectedItem) {
+        try {
+            console.log(selectedItem.id)
+            await this.menuItemsService.deleteMenuItem(selectedItem.id);
+            socket.emit('discardItemSuccess');
+        } catch (error) {
+            socket.emit('discardItemError', { error: error.message });
+        }
+    }
+
+    public async getDiscardableMenuItems(socket: Socket, menu_type) {
+        try {
+            const menuItems = await this.recommendationEngineService.getDiscardableItems(menu_type);
+            socket.emit('getDiscardableItemsSuccess', menuItems);
+        } catch (error) {
+            socket.emit('getDiscardableItemsError', { error: error.message });
+        }
     }
 
     public async getRecommendedMenuItems(socket: Socket, menu_type) {
@@ -20,24 +38,9 @@ class RecommendationController {
         }
     };
 
-    public async getDiscardableMenuItems(socket: Socket, menu_type) {
-        try {
-            const menuItems = await this.recommendationEngineService.getDiscardableItems(menu_type);
-            socket.emit('getDiscardableItemsSuccess', menuItems);
-        } catch (error) {
-            socket.emit('getDiscardableItemsError', { error: error.message });
-        }
-    };
+;
 
-    public async discardMenuItems(socket: Socket, selectedItem) {
-        try {
-            console.log(selectedItem.id)
-            await this.menuItemsService.deleteMenuItem(selectedItem.id);
-            socket.emit('discardItemSuccess');
-        } catch (error) {
-            socket.emit('discardItemError', { error: error.message });
-        }
-    };
+;
 }
 
 export default RecommendationController;

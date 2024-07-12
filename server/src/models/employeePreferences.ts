@@ -12,11 +12,11 @@ interface EmployeePreferencesAttributes {
 interface EmployeePreferencesCreationAttributes extends Optional<EmployeePreferencesAttributes, "userId"> { }
 
 class EmployeePreferences extends Model<EmployeePreferencesAttributes, EmployeePreferencesCreationAttributes> implements EmployeePreferencesAttributes {
-    public userId!: number;
+    public category!: 'north indian' | 'south indian' | 'other' | 'system_default';
     public mealType!: 'vegetarian' | 'non-vegetarian' | 'eggetarian' | 'system_default';
     public spiceLevel!: 'high' | 'medium' | 'low' | 'system_default';
-    public category!: 'north indian' | 'south indian' | 'other' | 'system_default';
     public sweetTooth!: boolean;
+    public userId!: number;
 }
 
 EmployeePreferences.init(

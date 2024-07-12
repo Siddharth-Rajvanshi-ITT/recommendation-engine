@@ -10,31 +10,6 @@ export class RecommendationEngineService {
         this.sentimentAnalyzer = new SentimentAnalyzer();
     }
 
-    private calculateSentiment(comment: string) {
-        const sentimentResult = this.sentimentAnalyzer.analyzeSentiment([comment]);
-        return sentimentResult;
-    }
-
-    private async getFeedbacksWithSentimentScore(menu_type) {
-        const feedbacks = await this.feedbackService.getFeedbacksByMenuType(menu_type);
-        const feedbacksWithSentimentScore = []
-
-        for (const feedback of feedbacks) {
-            const feedbackWithSentimentScore = {
-                feedback_id: feedback.feedback_id,
-                item_id: feedback.item_id,
-                user_id: feedback.user_id,
-                rating: feedback.rating,
-                comment: feedback.comment,
-                feedback_date: feedback.feedback_date,
-                sentiment: this.calculateSentiment(feedback.comment)
-            }
-            feedbacksWithSentimentScore.push(feedbackWithSentimentScore);
-        }
-
-        return feedbacksWithSentimentScore;
-    }
-
     private calculateMenuItemScores(feedbacksWithSentimentScore: any[]) {
         const menuItemScores: {
             [key: number]: {
@@ -61,22 +36,29 @@ export class RecommendationEngineService {
         return menuItemScores;
     }
 
-    private sortMenuItemsByScore(menuItemScores: { [key: number]: { totalRating: number; totalSentiment: number; count: number; } }) {
-        return Object.keys(menuItemScores)
-            .map((key: string) => {
-                const scoreData = menuItemScores[parseInt(key)];
-                const avgRating = scoreData.totalRating / scoreData.count;
-                const avgSentimentScore = scoreData.totalSentiment / scoreData.count;
-                const weightedScore = (0.3 * (avgRating / 5 * 100)) + (0.7 * avgSentimentScore);
-                return {
-                    itemId: parseInt(key),
-                    avgRating,
-                    avgSentimentScore,
-                    weightedScore
-                };
-            })
-            .sort((a, b) => b.avgSentimentScore - a.avgSentimentScore)
-            .slice(0, 5);
+    private calculateSentiment(comment: string) {
+        const sentimentResult = this.sentimentAnalyzer.analyzeSentiment([comment]);
+        return sentimentResult;
+    }
+
+    private async getFeedbacksWithSentimentScore(menu_type) {
+        const feedbacks = await this.feedbackService.getFeedbacksByMenuType(menu_type);
+        const feedbacksWithSentimentScore = []
+
+        for (const feedback of feedbacks) {
+            const feedbackWithSentimentScore = {
+                feedback_id: feedback.feedback_id,
+                item_id: feedback.item_id,
+                user_id: feedback.user_id,
+                rating: feedback.rating,
+                comment: feedback.comment,
+                feedback_date: feedback.feedback_date,
+                sentiment: this.calculateSentiment(feedback.comment)
+            }
+            feedbacksWithSentimentScore.push(feedbackWithSentimentScore);
+        }
+
+        return feedbacksWithSentimentScore;
     }
 
     private async getMenuItemDetails(sortedMenuItems: { itemId: number; avgRating: number; avgSentimentScore: number; weightedScore: number; }[]) {
@@ -118,13 +100,22 @@ export class RecommendationEngineService {
         });
     }
 
-    public async getRecommendations(menu_type: string) {
-        const feedbacksWithSentimentScore = await this.getFeedbacksWithSentimentScore(menu_type);
-        const menuItemScores = this.calculateMenuItemScores(feedbacksWithSentimentScore);
-        const sortedMenuItems = this.sortMenuItemsByScore(menuItemScores);
-        const menuItemDetails = await this.getMenuItemDetails(sortedMenuItems);
-
-        return menuItemDetails;
+    private sortMenuItemsByScore(menuItemScores: { [key: number]: { totalRating: number; totalSentiment: number; count: number; } }) {
+        return Object.keys(menuItemScores)
+            .map((key: string) => {
+                const scoreData = menuItemScores[parseInt(key)];
+                const avgRating = scoreData.totalRating / scoreData.count;
+                const avgSentimentScore = scoreData.totalSentiment / scoreData.count;
+                const weightedScore = (0.3 * (avgRating / 5 * 100)) + (0.7 * avgSentimentScore);
+                return {
+                    itemId: parseInt(key),
+                    avgRating,
+                    avgSentimentScore,
+                    weightedScore
+                };
+            })
+            .sort((a, b) => b.avgSentimentScore - a.avgSentimentScore)
+            .slice(0, 5);
     }
 
     public async getDiscardableItems(menu_type: string) {
@@ -174,6 +165,15 @@ export class RecommendationEngineService {
                 avg_rating: discardableItem.avgRating
             };
         });
+    }
+
+    public async getRecommendations(menu_type: string) {
+        const feedbacksWithSentimentScore = await this.getFeedbacksWithSentimentScore(menu_type);
+        const menuItemScores = this.calculateMenuItemScores(feedbacksWithSentimentScore);
+        const sortedMenuItems = this.sortMenuItemsByScore(menuItemScores);
+        const menuItemDetails = await this.getMenuItemDetails(sortedMenuItems);
+
+        return menuItemDetails;
     }
 }
 

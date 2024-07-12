@@ -12,10 +12,10 @@ interface MenuAttributes {
 interface MenuAttributesCreationAttributes extends Optional<MenuAttributes, "menuId"> {}
 
 class MenuAttributesModel extends Model<MenuAttributes, MenuAttributesCreationAttributes> implements MenuAttributes {
-    public menuId!: number;
-    public mealType!: 'vegetarian' | 'non-vegetarian' | 'eggetarian';
-    public spiceLevel!: 'high' | 'medium' | 'low';
     public category!: 'north indian' | 'south indian' | 'other';
+    public mealType!: 'vegetarian' | 'non-vegetarian' | 'eggetarian';
+    public menuId!: number;
+    public spiceLevel!: 'high' | 'medium' | 'low';
     public sweetTooth!: boolean;
 }
 

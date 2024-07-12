@@ -203,14 +203,6 @@ class EmployeeCommands {
         }
     }
 
-    private getCurrentDate(): string {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const menu_date = tomorrow.toISOString().split('T')[0];
-
-        return menu_date;
-    }
-
     private async fetchNotifications(user: any): Promise<Notification[]> {
         try {
             const notifications = await notificationService.getNotificationsByDate(user);
