@@ -1,4 +1,5 @@
 import User from "../models/user";
+import EmployeePreferencesService from "./employeePreferences";
 
 class UserService {
     async createUser(employeeID: string, name: string, email: string, password: string) {
