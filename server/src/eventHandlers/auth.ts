@@ -1,18 +1,19 @@
 import { Socket } from 'socket.io';
 import AuthSocketHandler from '../controllers/auth';
 
-const authSocketHandler = new AuthSocketHandler();
 
 export default class AuthEventHandler {
-    private socket;
+    private socket: Socket;
+    private authSocketHandler: AuthSocketHandler;
 
     constructor(socket: Socket) {
         this.socket = socket;
+        this.authSocketHandler = new AuthSocketHandler();
     }
 
     listen() {
         this.socket.on('login', async (data) => {
-            await authSocketHandler.login(this.socket, data);
+            await this.authSocketHandler.login(this.socket, data);
         });
     }
 }
