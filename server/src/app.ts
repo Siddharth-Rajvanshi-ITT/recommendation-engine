@@ -4,7 +4,7 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import sequelize from './config/database';
 import { EventHandlers } from './eventHandlers';
 
-class Server {
+export class Server {
     private app: Application;
     private server: http.Server;
     private io: SocketIOServer;
