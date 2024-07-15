@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface DailyRolloutAttributes {
     id: number;
@@ -9,7 +9,7 @@ interface DailyRolloutAttributes {
     date: string;
 }
 
-interface DailyRolloutCreationAttributes extends Optional<DailyRolloutAttributes, "id"> {}
+interface DailyRolloutCreationAttributes extends Optional<DailyRolloutAttributes, 'id'> {}
 
 class DailyRollout extends Model<DailyRolloutAttributes, DailyRolloutCreationAttributes> implements DailyRolloutAttributes {
     public breakfast!: boolean;
@@ -35,7 +35,6 @@ DailyRollout.init(
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
-
         },
         dinner: {
             type: DataTypes.BOOLEAN,
@@ -49,7 +48,7 @@ DailyRollout.init(
         },
     },
     {
-        tableName: "daily_rollouts",
+        tableName: 'daily_rollouts',
         sequelize,
     }
 );

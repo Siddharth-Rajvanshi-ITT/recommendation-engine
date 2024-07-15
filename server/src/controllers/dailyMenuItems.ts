@@ -25,7 +25,7 @@ class DailyMenuItemController {
     public getDailyMenuItemByDate = async (socket: Socket, data: any): Promise<void> => {
         const { date } = data;
 
-        console.log("getDailyMenuItemByDate date", date)
+        console.log('getDailyMenuItemByDate date', date);
         try {
             const dailyMenuItem = await this.dailyMenuItemService.getDailyMenuItemByDate(date);
             socket.emit('getDailyMenuItemByDateSuccess', dailyMenuItem);

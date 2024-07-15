@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface DiscardFeedbackAttributes {
     id: number;
@@ -11,7 +11,7 @@ interface DiscardFeedbackAttributes {
     question3: string;
 }
 
-interface DiscardFeedbackCreationAttributes extends Optional<DiscardFeedbackAttributes, "id"> {}
+interface DiscardFeedbackCreationAttributes extends Optional<DiscardFeedbackAttributes, 'id'> {}
 
 class DiscardFeedback extends Model<DiscardFeedbackAttributes, DiscardFeedbackCreationAttributes> implements DiscardFeedbackAttributes {
     public date!: string;
@@ -56,7 +56,7 @@ DiscardFeedback.init(
         },
     },
     {
-        tableName: "discard_feedback",
+        tableName: 'discard_feedback',
         sequelize,
     }
 );

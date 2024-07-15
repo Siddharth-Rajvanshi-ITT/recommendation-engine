@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface DailyUserVoteAttributes {
     id: number;
@@ -8,7 +8,7 @@ interface DailyUserVoteAttributes {
     date: string;
 }
 
-interface DailyUserVoteCreationAttributes extends Optional<DailyUserVoteAttributes, "id"> {}
+interface DailyUserVoteCreationAttributes extends Optional<DailyUserVoteAttributes, 'id'> {}
 
 class DailyUserVote extends Model<DailyUserVoteAttributes, DailyUserVoteCreationAttributes> implements DailyUserVoteAttributes {
     public category!: string;
@@ -38,7 +38,7 @@ DailyUserVote.init(
         },
     },
     {
-        tableName: "daily_user_votes",
+        tableName: 'daily_user_votes',
         sequelize,
     }
 );

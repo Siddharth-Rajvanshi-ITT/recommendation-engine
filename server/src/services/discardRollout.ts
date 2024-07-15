@@ -1,4 +1,4 @@
-import DiscardRollOut from "../models/discardRollout";
+import DiscardRollOut from '../models/discardRollout';
 
 class DiscardRollOutService {
     async createDiscardRollOut(item_id: number, item_name: string, price: number, date: string) {
@@ -14,7 +14,7 @@ class DiscardRollOutService {
         try {
             const discardRollOut = await DiscardRollOut.findByPk(id);
             if (!discardRollOut) {
-                throw new Error("DiscardRollOut not found");
+                throw new Error('DiscardRollOut not found');
             }
             await discardRollOut.destroy();
         } catch (error) {
@@ -24,7 +24,7 @@ class DiscardRollOutService {
 
     async getDiscardRollOutByDate() {
         try {
-            const discardRollOut = await DiscardRollOut.findOne({where: {date: new Date().toISOString().slice(0, 7)}});
+            const discardRollOut = await DiscardRollOut.findOne({ where: { date: new Date().toISOString().slice(0, 7) } });
             return discardRollOut;
         } catch (error) {
             throw new Error(error.message);
@@ -35,7 +35,7 @@ class DiscardRollOutService {
         try {
             const discardRollOut = await DiscardRollOut.findByPk(id);
             if (!discardRollOut) {
-                throw new Error("DiscardRollOut not found");
+                throw new Error('DiscardRollOut not found');
             }
             return discardRollOut;
         } catch (error) {
@@ -56,7 +56,7 @@ class DiscardRollOutService {
         try {
             const discardRollOut = await DiscardRollOut.findByPk(id);
             if (!discardRollOut) {
-                throw new Error("DiscardRollOut not found");
+                throw new Error('DiscardRollOut not found');
             }
             discardRollOut.item_id = item_id;
             discardRollOut.item_name = item_name;

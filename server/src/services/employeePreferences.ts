@@ -1,4 +1,4 @@
-import EmployeePreferences from "../models/employeePreferences";
+import EmployeePreferences from '../models/employeePreferences';
 
 class EmployeePreferencesService {
     async createEmployeePreference(userId: number, mealType: 'vegetarian' | 'non-vegetarian' | 'eggetarian', spiceLevel: 'high' | 'medium' | 'low', category: 'north indian' | 'south indian' | 'other', sweetTooth: boolean) {
@@ -14,7 +14,7 @@ class EmployeePreferencesService {
         try {
             const preference = await EmployeePreferences.findOne({ where: { userId } });
             if (!preference) {
-                throw new Error("Employee preference not found");
+                throw new Error('Employee preference not found');
             }
             await preference.destroy();
         } catch (error) {
@@ -35,7 +35,7 @@ class EmployeePreferencesService {
         try {
             const preference = await EmployeePreferences.findOne({ where: { userId } });
             if (!preference) {
-                throw new Error("Employee preference not found");
+                throw new Error('Employee preference not found');
             }
             return preference;
         } catch (error) {
@@ -56,7 +56,7 @@ class EmployeePreferencesService {
         try {
             const preference = await EmployeePreferences.findOne({ where: { userId } });
             if (!preference) {
-                throw new Error("Employee preference not found");
+                throw new Error('Employee preference not found');
             }
             preference.mealType = mealType;
             preference.spiceLevel = spiceLevel;

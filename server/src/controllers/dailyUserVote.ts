@@ -7,7 +7,7 @@ class DailyUserVoteController {
     private voteItemService: VoteItemService;
     public createUserVote = async (socket: Socket, data: any): Promise<void> => {
         const { category } = data.menu_item;
-        const { id: user_id } = data.user
+        const { id: user_id } = data.user;
         const date = new Date().toISOString().split('T')[0];
 
         try {

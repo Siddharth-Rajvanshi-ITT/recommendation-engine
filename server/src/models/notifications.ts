@@ -1,6 +1,6 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
-import User from "./user";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
+import User from './user';
 
 interface NotificationAttributes {
     notification_id: number;
@@ -9,7 +9,7 @@ interface NotificationAttributes {
     notification_timestamp: string;
 }
 
-interface NotificationCreationAttributes extends Optional<NotificationAttributes, "notification_id"> { }
+interface NotificationCreationAttributes extends Optional<NotificationAttributes, 'notification_id'> {}
 
 class Notification extends Model<NotificationAttributes, NotificationCreationAttributes> implements NotificationAttributes {
     public notification_data!: object;
@@ -39,7 +39,7 @@ Notification.init(
         },
     },
     {
-        tableName: "notifications",
+        tableName: 'notifications',
         sequelize,
     }
 );

@@ -12,7 +12,7 @@ class RecommendationController {
 
     public async discardMenuItems(socket: Socket, selectedItem) {
         try {
-            console.log(selectedItem.id)
+            console.log(selectedItem.id);
             await this.menuItemsService.deleteMenuItem(selectedItem.id);
             socket.emit('discardItemSuccess');
         } catch (error) {
@@ -36,11 +36,7 @@ class RecommendationController {
         } catch (error) {
             socket.emit('getRecommendedItemsError', { error: error.message });
         }
-    };
-
-;
-
-;
+    }
 }
 
 export default RecommendationController;

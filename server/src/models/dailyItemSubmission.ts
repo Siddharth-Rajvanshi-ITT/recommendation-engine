@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface DailyItemSubmissionAttributes {
     id: number;
@@ -9,7 +9,7 @@ interface DailyItemSubmissionAttributes {
     date: string;
 }
 
-interface DailyItemSubmissionCreationAttributes extends Optional<DailyItemSubmissionAttributes, "id"> {}
+interface DailyItemSubmissionCreationAttributes extends Optional<DailyItemSubmissionAttributes, 'id'> {}
 
 class DailyItemSubmission extends Model<DailyItemSubmissionAttributes, DailyItemSubmissionCreationAttributes> implements DailyItemSubmissionAttributes {
     public breakfast!: boolean;
@@ -48,7 +48,7 @@ DailyItemSubmission.init(
         },
     },
     {
-        tableName: "daily_item_submissions",
+        tableName: 'daily_item_submissions',
         sequelize,
     }
 );
