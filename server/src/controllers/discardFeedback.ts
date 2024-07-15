@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
 import DiscardFeedbackService from '../services/discardFeedback';
 
-
 class DiscardFeedbackController {
     private discardFeedbackService: DiscardFeedbackService;
     public checkDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
@@ -14,7 +13,7 @@ class DiscardFeedbackController {
         } catch (error) {
             socket.emit('checkDiscardFeedbackError', { message: error.message });
         }
-    }
+    };
     public createDiscardFeedback = async (socket: Socket, data: any): Promise<void> => {
         const { item_id, user_id, answer1, answer2, answer3 } = data;
         const date = new Date().toISOString().slice(0, 7);
@@ -56,7 +55,7 @@ class DiscardFeedbackController {
         }
     };
     public getDiscardFeedbacksByCondition = async (socket: Socket, data: any): Promise<void> => {
-        console.log('getDiscardFeedbacksByCondition', data)
+        console.log('getDiscardFeedbacksByCondition', data);
         const { item_id, user_id } = data;
         const date = new Date().toISOString().slice(0, 7);
         try {

@@ -1,11 +1,11 @@
-import User from "../models/user";
+import User from '../models/user';
 
 class AuthService {
     async login(id: string, name: string) {
         try {
             const user = await User.findOne({ where: { id, name } });
             if (!user) {
-                throw new Error("Invalid employee ID or name");
+                throw new Error('Invalid employee ID or name');
             }
             return user;
         } catch (error) {

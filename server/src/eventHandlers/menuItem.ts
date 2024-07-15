@@ -1,38 +1,36 @@
-import { Socket } from "socket.io";
-import MenuItemSocketHandler from "../controllers/menuItem";
+import { Socket } from 'socket.io';
+import MenuItemSocketHandler from '../controllers/menuItem';
 
 const menuItemSocketHandler = new MenuItemSocketHandler();
 
-
 export default class MenuItemEventHandler {
-    private socket
+    private socket;
 
     constructor(socket: Socket) {
-        this.socket = socket
+        this.socket = socket;
     }
 
-    listen(){
-        this.socket.on("createMenuItem", async (data) => {
+    listen() {
+        this.socket.on('createMenuItem', async (data) => {
             await menuItemSocketHandler.createMenuItem(this.socket, data);
         });
-        this.socket.on("getMenuItems", async () => {
+        this.socket.on('getMenuItems', async () => {
             await menuItemSocketHandler.getMenuItems(this.socket);
         });
-        this.socket.on("getMenuItemById", async (data) => {
+        this.socket.on('getMenuItemById', async (data) => {
             await menuItemSocketHandler.getMenuItemById(this.socket, data);
         });
-        this.socket.on("getMenuItemByIds", async (data) => {
+        this.socket.on('getMenuItemByIds', async (data) => {
             await menuItemSocketHandler.getMenuItemByIds(this.socket, data);
         });
-        this.socket.on("updateMenuItem", async (data) => {
+        this.socket.on('updateMenuItem', async (data) => {
             await menuItemSocketHandler.updateMenuItem(this.socket, data);
         });
-        this.socket.on("deleteMenuItem", async (data) => {
+        this.socket.on('deleteMenuItem', async (data) => {
             await menuItemSocketHandler.deleteMenuItem(this.socket, data);
         });
-        this.socket.on("updateMenuItemAvailability", async (data) => {
+        this.socket.on('updateMenuItemAvailability', async (data) => {
             await menuItemSocketHandler.updateMenuItemAvailability(this.socket, data);
         });
     }
 }
-

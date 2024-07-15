@@ -1,5 +1,5 @@
-import { Socket } from "socket.io";
-import DailyItemSubmissionController from "../controllers/dailyItemSubmission";
+import { Socket } from 'socket.io';
+import DailyItemSubmissionController from '../controllers/dailyItemSubmission';
 
 const dailyItemSubmissionController = new DailyItemSubmissionController();
 
@@ -11,23 +11,23 @@ export default class DailyItemSubmissionEventHandler {
     }
 
     listen() {
-        this.socket.on("createDailyItemSubmission", async (data) => {
-            console.log('------------------createDailyMenuItem', data)
+        this.socket.on('createDailyItemSubmission', async (data) => {
+            console.log('------------------createDailyMenuItem', data);
             await dailyItemSubmissionController.createDailyItemSubmission(this.socket, data);
         });
-        this.socket.on("getDailyItemSubmissions", async () => {
+        this.socket.on('getDailyItemSubmissions', async () => {
             await dailyItemSubmissionController.getDailyItemSubmissions(this.socket);
         });
-        this.socket.on("getDailyItemSubmissionById", async (data) => {
+        this.socket.on('getDailyItemSubmissionById', async (data) => {
             await dailyItemSubmissionController.getDailyItemSubmissionById(this.socket, data);
         });
-        this.socket.on("getDailyItemSubmissionByDate", async (data) => {
+        this.socket.on('getDailyItemSubmissionByDate', async (data) => {
             await dailyItemSubmissionController.getDailyItemSubmissionByDate(this.socket, data);
         });
-        this.socket.on("updateDailyItemSubmission", async (data) => {
+        this.socket.on('updateDailyItemSubmission', async (data) => {
             await dailyItemSubmissionController.updateDailyItemSubmission(this.socket, data);
         });
-        this.socket.on("deleteDailyItemSubmission", async (data) => {
+        this.socket.on('deleteDailyItemSubmission', async (data) => {
             await dailyItemSubmissionController.deleteDailyItemSubmission(this.socket, data);
         });
     }

@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface DiscardRollOutAttributes {
     id: number;
@@ -9,7 +9,7 @@ interface DiscardRollOutAttributes {
     date: string;
 }
 
-interface DiscardRollOutCreationAttributes extends Optional<DiscardRollOutAttributes, "id"> {}
+interface DiscardRollOutCreationAttributes extends Optional<DiscardRollOutAttributes, 'id'> {}
 
 class DiscardRollOut extends Model<DiscardRollOutAttributes, DiscardRollOutCreationAttributes> implements DiscardRollOutAttributes {
     public date!: string;
@@ -45,7 +45,7 @@ DiscardRollOut.init(
         },
     },
     {
-        tableName: "discard_roll_out",
+        tableName: 'discard_roll_out',
         sequelize,
     }
 );

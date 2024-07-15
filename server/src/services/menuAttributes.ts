@@ -1,4 +1,4 @@
-import MenuAttributes from "../models/menuAttributes";
+import MenuAttributes from '../models/menuAttributes';
 
 class MenuAttributesService {
     async createMenuAttribute(menuId: number, mealType: 'vegetarian' | 'non-vegetarian' | 'eggetarian', spiceLevel: 'high' | 'medium' | 'low', category: 'north indian' | 'south indian' | 'other', sweetTooth: boolean) {
@@ -14,7 +14,7 @@ class MenuAttributesService {
         try {
             const menuAttributes = await MenuAttributes.findOne({ where: { menuId } });
             if (!menuAttributes) {
-                throw new Error("Menu attribute not found");
+                throw new Error('Menu attribute not found');
             }
             await menuAttributes.destroy();
         } catch (error) {
@@ -35,7 +35,7 @@ class MenuAttributesService {
         try {
             const menuAttributes = await MenuAttributes.findOne({ where: { menuId } });
             if (!menuAttributes) {
-                throw new Error("Menu attribute not found");
+                throw new Error('Menu attribute not found');
             }
             return menuAttributes;
         } catch (error) {
@@ -56,7 +56,7 @@ class MenuAttributesService {
         try {
             const menuAttributes = await MenuAttributes.findOne({ where: { menuId } });
             if (!menuAttributes) {
-                throw new Error("Menu attribute not found");
+                throw new Error('Menu attribute not found');
             }
             menuAttributes.mealType = mealType;
             menuAttributes.spiceLevel = spiceLevel;

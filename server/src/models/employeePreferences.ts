@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface EmployeePreferencesAttributes {
     userId: number;
@@ -9,7 +9,7 @@ interface EmployeePreferencesAttributes {
     sweetTooth: boolean;
 }
 
-interface EmployeePreferencesCreationAttributes extends Optional<EmployeePreferencesAttributes, "userId"> { }
+interface EmployeePreferencesCreationAttributes extends Optional<EmployeePreferencesAttributes, 'userId'> {}
 
 class EmployeePreferences extends Model<EmployeePreferencesAttributes, EmployeePreferencesCreationAttributes> implements EmployeePreferencesAttributes {
     public category!: 'north indian' | 'south indian' | 'other' | 'system_default';
@@ -48,7 +48,7 @@ EmployeePreferences.init(
         },
     },
     {
-        tableName: "employee_preferences",
+        tableName: 'employee_preferences',
         sequelize,
     }
 );

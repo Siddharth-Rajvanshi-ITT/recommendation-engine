@@ -40,8 +40,8 @@ class VoteItemService {
             const voteItems = await VoteItem.findAll({
                 where: {
                     date,
-                    category
-                }
+                    category,
+                },
             });
             return voteItems;
         } catch (error) {
@@ -70,8 +70,8 @@ class VoteItemService {
                 where: {
                     menu_id,
                     date,
-                    category
-                }
+                    category,
+                },
             });
 
             if (existingVoteItem) {

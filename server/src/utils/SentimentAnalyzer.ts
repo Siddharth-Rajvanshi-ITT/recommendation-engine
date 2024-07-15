@@ -6,37 +6,90 @@ export class SentimentAnalyzer {
     private positiveWords: Set<string>;
     constructor() {
         this.positiveWords = new Set([
-            "good", "great", "excellent", "amazing", "delicious", "tasty", "love",
-            "fantastic", "wonderful", "awesome", "pleasant", "enjoyable", "nice",
-            "superb", "yummy", "satisfying", "perfect", "positive", "brilliant",
-            "spectacular", "like", "enjoy", "happy", "pleased", "pleasing",
-            "outstanding", "splendid", "remarkable", "exceptional", "mouthwatering",
-            "delectable", "flavorful", "succulent", "appetizing"
+            'good',
+            'great',
+            'excellent',
+            'amazing',
+            'delicious',
+            'tasty',
+            'love',
+            'fantastic',
+            'wonderful',
+            'awesome',
+            'pleasant',
+            'enjoyable',
+            'nice',
+            'superb',
+            'yummy',
+            'satisfying',
+            'perfect',
+            'positive',
+            'brilliant',
+            'spectacular',
+            'like',
+            'enjoy',
+            'happy',
+            'pleased',
+            'pleasing',
+            'outstanding',
+            'splendid',
+            'remarkable',
+            'exceptional',
+            'mouthwatering',
+            'delectable',
+            'flavorful',
+            'succulent',
+            'appetizing',
         ]);
 
         this.negativeWords = new Set([
-            "bad", "terrible", "awful", "disgusting", "poor", "hate", "unpleasant",
-            "horrible", "nasty", "dreadful", "subpar", "unappetizing",
-            "atrocious", "gross", "dislike", "worst", "negative", "inferior",
-            "unsatisfactory", "appalling", "sad", "unsatisfied", "unhappy",
-            "displeased", "horrific", "abysmal", "pathetic", "lousy", "bland",
-            "tasteless", "flavorless", "overcooked", "undercooked", "stale", "greasy",
-            "oily", "burnt", "dry", "rubbery", "soggy"
+            'bad',
+            'terrible',
+            'awful',
+            'disgusting',
+            'poor',
+            'hate',
+            'unpleasant',
+            'horrible',
+            'nasty',
+            'dreadful',
+            'subpar',
+            'unappetizing',
+            'atrocious',
+            'gross',
+            'dislike',
+            'worst',
+            'negative',
+            'inferior',
+            'unsatisfactory',
+            'appalling',
+            'sad',
+            'unsatisfied',
+            'unhappy',
+            'displeased',
+            'horrific',
+            'abysmal',
+            'pathetic',
+            'lousy',
+            'bland',
+            'tasteless',
+            'flavorless',
+            'overcooked',
+            'undercooked',
+            'stale',
+            'greasy',
+            'oily',
+            'burnt',
+            'dry',
+            'rubbery',
+            'soggy',
         ]);
 
-        this.neutralWords = new Set([
-            "okay", "average", "mediocre", "fair", "moderate", "ordinary", "standard"
-        ]);
+        this.neutralWords = new Set(['okay', 'average', 'mediocre', 'fair', 'moderate', 'ordinary', 'standard']);
 
-        this.intensifiers = new Set([
-            "very", "extremely", "incredibly", "absolutely", "totally", "really",
-            "truly", "highly", "completely", "utterly"
-        ]);
+        this.intensifiers = new Set(['very', 'extremely', 'incredibly', 'absolutely', 'totally', 'really', 'truly', 'highly', 'completely', 'utterly']);
 
-        this.negators = new Set([
-            "not", "never", "no", "neither", "nor", "barely", "hardly", "scarcely",
-            "seldom", "rarely"
-        ]);
+        this.negators = new Set(['not', 'never', 'no', 'neither', 'nor', 'barely', 'hardly', 'scarcely', 'seldom', 'rarely']);
     }
 
     public analyzeSentiment(comments: string[]): {
@@ -47,7 +100,10 @@ export class SentimentAnalyzer {
         let totalWords = 0;
 
         comments.forEach((comment) => {
-            const words = comment.toLowerCase().split(/\W+/).filter(word => word.length > 0);
+            const words = comment
+                .toLowerCase()
+                .split(/\W+/)
+                .filter((word) => word.length > 0);
             let localScore = 0;
             let intensifier = 1;
             let negator = 1;
@@ -76,7 +132,7 @@ export class SentimentAnalyzer {
         });
 
         if (totalWords === 0) {
-            return { sentiment: "Insufficient Data", score: 50 };
+            return { sentiment: 'Insufficient Data', score: 50 };
         }
 
         const normalizedScore = (totalScore / totalWords) * 50 + 50;
@@ -84,15 +140,15 @@ export class SentimentAnalyzer {
 
         let sentiment: string;
         if (clampedScore >= 80) {
-            sentiment = "Highly Recommended";
+            sentiment = 'Highly Recommended';
         } else if (clampedScore >= 60) {
-            sentiment = "Good";
+            sentiment = 'Good';
         } else if (clampedScore >= 40) {
-            sentiment = "Average";
+            sentiment = 'Average';
         } else if (clampedScore >= 20) {
-            sentiment = "Bad";
+            sentiment = 'Bad';
         } else {
-            sentiment = "Avoid";
+            sentiment = 'Avoid';
         }
 
         return { sentiment, score: Math.round(clampedScore) };

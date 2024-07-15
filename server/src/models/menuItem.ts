@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface MenuItemAttributes {
     item_id: number;
@@ -10,7 +10,7 @@ interface MenuItemAttributes {
     availability_status: 'available' | 'unavailable';
 }
 
-interface MenuItemCreationAttributes extends Optional<MenuItemAttributes, "item_id"> {}
+interface MenuItemCreationAttributes extends Optional<MenuItemAttributes, 'item_id'> {}
 
 class MenuItem extends Model<MenuItemAttributes, MenuItemCreationAttributes> implements MenuItemAttributes {
     public availability_status!: 'available' | 'unavailable';
@@ -50,7 +50,7 @@ MenuItem.init(
         },
     },
     {
-        tableName: "menu_items",
+        tableName: 'menu_items',
         sequelize,
     }
 );

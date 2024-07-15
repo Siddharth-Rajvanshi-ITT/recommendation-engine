@@ -1,4 +1,4 @@
-import DailyUserVote from "../models/dailyUserVote";
+import DailyUserVote from '../models/dailyUserVote';
 
 class DailyUserVoteService {
     private async checkUserVote(user_id: number, category: string, date: string) {
@@ -14,7 +14,7 @@ class DailyUserVoteService {
         try {
             const existingVote = await this.checkUserVote(user_id, category, date);
             if (existingVote) {
-                throw new Error("You have already voted for this category today");
+                throw new Error('You have already voted for this category today');
             }
             const vote = await DailyUserVote.create({ user_id, category, date });
             return vote;
@@ -27,7 +27,7 @@ class DailyUserVoteService {
         try {
             const vote = await DailyUserVote.findByPk(id);
             if (!vote) {
-                throw new Error("Vote not found");
+                throw new Error('Vote not found');
             }
             await vote.destroy();
         } catch (error) {
@@ -39,7 +39,7 @@ class DailyUserVoteService {
         try {
             const vote = await DailyUserVote.findByPk(id);
             if (!vote) {
-                throw new Error("Vote not found");
+                throw new Error('Vote not found');
             }
             return vote;
         } catch (error) {
@@ -74,7 +74,7 @@ class DailyUserVoteService {
         try {
             const vote = await DailyUserVote.findByPk(id);
             if (!vote) {
-                throw new Error("Vote not found");
+                throw new Error('Vote not found');
             }
             vote.category = category;
             await vote.save();

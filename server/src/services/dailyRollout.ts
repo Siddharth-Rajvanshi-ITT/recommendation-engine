@@ -1,4 +1,4 @@
-import DailyRollout from "../models/dailyRollout";
+import DailyRollout from '../models/dailyRollout';
 
 class DailyRolloutService {
     async createDailyRollout(menu_type, date: string) {
@@ -7,13 +7,13 @@ class DailyRolloutService {
             let dailyRollout;
 
             if (menu_type === 'breakfast') {
-                console.log('Creating dailyRollout - breakfast')
+                console.log('Creating dailyRollout - breakfast');
                 dailyRollout = await DailyRollout.create({ breakfast: true, date });
             } else if (menu_type === 'lunch') {
-                console.log('Creating dailyRollout - lunch')
+                console.log('Creating dailyRollout - lunch');
                 dailyRollout = await DailyRollout.create({ lunch: true, date });
             } else if (menu_type === 'dinner') {
-                console.log('Creating dailyRollout - dinner')
+                console.log('Creating dailyRollout - dinner');
                 dailyRollout = await DailyRollout.create({ dinner: true, date });
             }
 
@@ -28,7 +28,7 @@ class DailyRolloutService {
         try {
             const dailyRollout = await DailyRollout.findByPk(id);
             if (!dailyRollout) {
-                throw new Error("DailyRollout not found");
+                throw new Error('DailyRollout not found');
             }
             await dailyRollout.destroy();
         } catch (error) {
@@ -51,7 +51,7 @@ class DailyRolloutService {
         try {
             const dailyRollout = await DailyRollout.findByPk(id);
             if (!dailyRollout) {
-                throw new Error("DailyRollout not found");
+                throw new Error('DailyRollout not found');
             }
             return dailyRollout;
         } catch (error) {

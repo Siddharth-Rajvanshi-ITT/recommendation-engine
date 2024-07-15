@@ -1,4 +1,4 @@
-import DailyItemSubmission from "../models/dailyItemSubmission";
+import DailyItemSubmission from '../models/dailyItemSubmission';
 
 class DailyItemSubmissionService {
     async createDailyItemSubmission(menu_type: string, date: string) {
@@ -28,7 +28,7 @@ class DailyItemSubmissionService {
         try {
             const dailyItemSubmission = await DailyItemSubmission.findByPk(id);
             if (!dailyItemSubmission) {
-                throw new Error("DailyItemSubmission not found");
+                throw new Error('DailyItemSubmission not found');
             }
             await dailyItemSubmission.destroy();
         } catch (error) {
@@ -51,7 +51,7 @@ class DailyItemSubmissionService {
         try {
             const dailyItemSubmission = await DailyItemSubmission.findByPk(id);
             if (!dailyItemSubmission) {
-                throw new Error("DailyItemSubmission not found");
+                throw new Error('DailyItemSubmission not found');
             }
             return dailyItemSubmission;
         } catch (error) {
