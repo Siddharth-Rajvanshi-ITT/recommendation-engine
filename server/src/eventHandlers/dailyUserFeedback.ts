@@ -1,33 +1,34 @@
 import { Socket } from 'socket.io';
 import DailyUserFeedbackSocketHandler from '../controllers/dailyUserFeedback';
 
-const dailyUserFeedbackSocketHandler = new DailyUserFeedbackSocketHandler();
 
 export default class DailyUserFeedbackEventHandler {
     private socket: Socket;
+    private dailyUserFeedbackSocketHandler: DailyUserFeedbackSocketHandler;
 
     constructor(socket: Socket) {
         this.socket = socket;
+        this.dailyUserFeedbackSocketHandler = new DailyUserFeedbackSocketHandler();
     }
 
     listen() {
         this.socket.on('createUserFeedback', async (data) => {
-            await dailyUserFeedbackSocketHandler.createUserFeedback(this.socket, data);
+            await this.dailyUserFeedbackSocketHandler.createUserFeedback(this.socket, data);
         });
         this.socket.on('getUserFeedbacks', async () => {
-            await dailyUserFeedbackSocketHandler.getUserFeedbacks(this.socket);
+            await this.dailyUserFeedbackSocketHandler.getUserFeedbacks(this.socket);
         });
         this.socket.on('getUserFeedbackById', async (data) => {
-            await dailyUserFeedbackSocketHandler.getUserFeedbackById(this.socket, data);
+            await this.dailyUserFeedbackSocketHandler.getUserFeedbackById(this.socket, data);
         });
         this.socket.on('getUserFeedbacksByCondition', async (data) => {
-            await dailyUserFeedbackSocketHandler.getUserFeedbacksByCondition(this.socket, data);
+            await this.dailyUserFeedbackSocketHandler.getUserFeedbacksByCondition(this.socket, data);
         });
         this.socket.on('updateUserFeedback', async (data) => {
-            await dailyUserFeedbackSocketHandler.updateUserFeedback(this.socket, data);
+            await this.dailyUserFeedbackSocketHandler.updateUserFeedback(this.socket, data);
         });
         this.socket.on('deleteUserFeedback', async (data) => {
-            await dailyUserFeedbackSocketHandler.deleteUserFeedback(this.socket, data);
+            await this.dailyUserFeedbackSocketHandler.deleteUserFeedback(this.socket, data);
         });
     }
 }

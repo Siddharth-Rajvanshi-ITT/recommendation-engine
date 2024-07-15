@@ -4,11 +4,17 @@ import MenuItemService from './menuItem';
 import MenuAttributesService from './menuAttributes';
 import EmployeePreferencesService from './employeePreferences';
 
-const menuItemService = new MenuItemService();
-const menuAttributesService = new MenuAttributesService();
-const employeePreferencesService = new EmployeePreferencesService();
 
 class NotificationService {
+    private menuItemService: MenuItemService;
+    private menuAttributesService: MenuAttributesService;
+    private employeePreferencesService: EmployeePreferencesService;
+
+    constructor(){
+        this.menuItemService = new MenuItemService();
+        this.menuAttributesService = new MenuAttributesService();
+        this.employeePreferencesService = new EmployeePreferencesService();
+    }
     private sortPreferences(employeePreferences, menuItems) {
         return new Promise((resolve) => {
             const sortItems = (a, b) => {
@@ -77,16 +83,16 @@ class NotificationService {
             }
 
             const menuItemIds = notifications.flatMap((notification) => notification.notification_data as number[]);
-            const menuItems = (await menuItemService.getMenuItemByIds(menuItemIds)) as any[];
+            const menuItems = (await this.menuItemService.getMenuItemByIds(menuItemIds)) as any[];
             const menuItemMap = new Map(menuItems.map((item) => [item.item_id, item]));
-            const employeePreferences = await employeePreferencesService.getEmployeePreference(user.id);
+            const employeePreferences = await this.employeePreferencesService.getEmployeePreference(user.id);
 
             const notificationsWithDetails = Promise.all(
                 notifications.map(async (notification) => {
                     const detailedItems = await Promise.all(
                         (notification.notification_data as number[]).map(async (id) => {
                             const menuItem = menuItemMap.get(id);
-                            const menuAttributes = await menuAttributesService.getMenuAttribute(menuItem.item_id);
+                            const menuAttributes = await this.menuAttributesService.getMenuAttribute(menuItem.item_id);
 
                             return {
                                 item_id: menuItem.item_id,
