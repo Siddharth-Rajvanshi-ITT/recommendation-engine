@@ -1,5 +1,5 @@
-import DailyMenuItems from "../models/dailyMenuItems";
-import MenuItemService from "./menuItem";
+import DailyMenuItems from '../models/dailyMenuItems';
+import MenuItemService from './menuItem';
 
 class DailyMenuItemsService {
     async createDailyMenuItem(item_id: number, quantity_prepared: number, date: string) {
@@ -15,7 +15,7 @@ class DailyMenuItemsService {
         try {
             const dailyMenuItem = await DailyMenuItems.findByPk(id);
             if (!dailyMenuItem) {
-                throw new Error("Daily menu item not found");
+                throw new Error('Daily menu item not found');
             }
             await dailyMenuItem.destroy();
         } catch (error) {
@@ -24,11 +24,11 @@ class DailyMenuItemsService {
     }
 
     async getDailyMenuItemByDate(date: string) {
-        const menuItemService = new MenuItemService()
+        const menuItemService = new MenuItemService();
         try {
             const dailyMenuItems = await DailyMenuItems.findAll({ where: { date } });
             if (!dailyMenuItems) {
-                throw new Error("Daily menu item not found");
+                throw new Error('Daily menu item not found');
             }
             return await Promise.all(
                 dailyMenuItems.map(async (item) => {
@@ -37,8 +37,9 @@ class DailyMenuItemsService {
                         id: item.item_id,
                         name: menuItem.name,
                         category: menuItem.category,
-                    }
-                }));
+                    };
+                })
+            );
         } catch (error) {
             throw new Error(error.message);
         }
@@ -48,7 +49,7 @@ class DailyMenuItemsService {
         try {
             const dailyMenuItem = await DailyMenuItems.findByPk(id);
             if (!dailyMenuItem) {
-                throw new Error("Daily menu item not found");
+                throw new Error('Daily menu item not found');
             }
             return dailyMenuItem;
         } catch (error) {
@@ -69,7 +70,7 @@ class DailyMenuItemsService {
         try {
             const dailyMenuItem = await DailyMenuItems.findByPk(id);
             if (!dailyMenuItem) {
-                throw new Error("Daily menu item not found");
+                throw new Error('Daily menu item not found');
             }
             dailyMenuItem.item_id = item_id;
             dailyMenuItem.quantity_prepared = quantity_prepared;

@@ -1,4 +1,4 @@
-import DailyUserFeedback from "../models/dailyUserFeedback";
+import DailyUserFeedback from '../models/dailyUserFeedback';
 
 class DailyUserFeedbackService {
     private async checkUserFeedback(user_id: number, category: string, date: string) {
@@ -12,16 +12,16 @@ class DailyUserFeedbackService {
 
     async createUserFeedback(user_id: number, category: string, date: string) {
         try {
-            console.log('inside createUserFeedback')
+            console.log('inside createUserFeedback');
             const existingFeedback = await this.checkUserFeedback(user_id, category, date);
-            console.log('existingFeedback', existingFeedback)
+            console.log('existingFeedback', existingFeedback);
             if (existingFeedback) {
-                throw new Error("You have already provided feedback for this category today");
+                throw new Error('You have already provided feedback for this category today');
             }
 
-            console.log('creating user feedback')
+            console.log('creating user feedback');
             const feedback = await DailyUserFeedback.create({ user_id, category, date });
-            console.log('user feedback created:', feedback)
+            console.log('user feedback created:', feedback);
 
             return feedback;
         } catch (error) {
@@ -33,7 +33,7 @@ class DailyUserFeedbackService {
         try {
             const feedback = await DailyUserFeedback.findByPk(id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             await feedback.destroy();
         } catch (error) {
@@ -45,7 +45,7 @@ class DailyUserFeedbackService {
         try {
             const feedback = await DailyUserFeedback.findByPk(id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             return feedback;
         } catch (error) {
@@ -80,7 +80,7 @@ class DailyUserFeedbackService {
         try {
             const feedback = await DailyUserFeedback.findByPk(id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             feedback.category = category;
             await feedback.save();

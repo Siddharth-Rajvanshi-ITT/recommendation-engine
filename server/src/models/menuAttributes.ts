@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface MenuAttributes {
     menuId: number;
@@ -9,7 +9,7 @@ interface MenuAttributes {
     sweetTooth: boolean;
 }
 
-interface MenuAttributesCreationAttributes extends Optional<MenuAttributes, "menuId"> {}
+interface MenuAttributesCreationAttributes extends Optional<MenuAttributes, 'menuId'> {}
 
 class MenuAttributesModel extends Model<MenuAttributes, MenuAttributesCreationAttributes> implements MenuAttributes {
     public category!: 'north indian' | 'south indian' | 'other';
@@ -45,7 +45,7 @@ MenuAttributesModel.init(
         },
     },
     {
-        tableName: "menuAttributes",
+        tableName: 'menuAttributes',
         sequelize,
     }
 );

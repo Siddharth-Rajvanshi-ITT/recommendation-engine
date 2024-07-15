@@ -1,16 +1,16 @@
-import DailyUserFeedback from "src/services/dailyUserFeedback";
-import Feedback from "../models/feedback";
-import MenuItem from "src/models/menuItem";
+import DailyUserFeedback from 'src/services/dailyUserFeedback';
+import Feedback from '../models/feedback';
+import MenuItem from 'src/models/menuItem';
 
 class FeedbackService {
     async createFeedback(item_id: number, user_id: number, rating: number, comment: string, feedback_date: Date, category: string) {
-        const dailyUserFeedback = new DailyUserFeedback()
+        const dailyUserFeedback = new DailyUserFeedback();
         try {
             const feedback = await Feedback.create({ item_id, user_id, rating, comment, feedback_date });
-            console.log("feedback created:", feedback)
-            console.log('feedback date', feedback_date)
+            console.log('feedback created:', feedback);
+            console.log('feedback date', feedback_date);
             const userFeedback = await dailyUserFeedback.createUserFeedback(user_id, category, feedback_date as any);
-            console.log("userFeedback created:", userFeedback)
+            console.log('userFeedback created:', userFeedback);
             return feedback;
         } catch (error) {
             throw new Error(error.message);
@@ -21,7 +21,7 @@ class FeedbackService {
         try {
             const feedback = await Feedback.findByPk(feedback_id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             await feedback.destroy();
         } catch (error) {
@@ -33,7 +33,7 @@ class FeedbackService {
         try {
             const feedback = await Feedback.findByPk(feedback_id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             return feedback;
         } catch (error) {
@@ -53,15 +53,17 @@ class FeedbackService {
     async getFeedbacksByMenuType(menu_type: string) {
         try {
             const feedbacks = await Feedback.findAll({
-                include: [{
-                    model: MenuItem,
-                    where: { category: menu_type },
-                    required: true
-                }]
+                include: [
+                    {
+                        model: MenuItem,
+                        where: { category: menu_type },
+                        required: true,
+                    },
+                ],
             });
 
             if (!feedbacks.length) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
 
             return feedbacks;
@@ -74,7 +76,7 @@ class FeedbackService {
         try {
             const feedback = await Feedback.findByPk(feedback_id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             feedback.item_id = item_id;
             feedback.user_id = user_id;

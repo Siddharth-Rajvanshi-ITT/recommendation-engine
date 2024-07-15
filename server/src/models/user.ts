@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface UserAttributes {
     id: number;
@@ -7,10 +7,10 @@ interface UserAttributes {
     name: string;
     email: string;
     password: string;
-    role: "employee" | "admin" | "chef";
+    role: 'employee' | 'admin' | 'chef';
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public email!: string;
@@ -18,7 +18,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
     public id!: number;
     public name!: string;
     public password!: string;
-    public role!: "employee" | "admin" | "chef";
+    public role!: 'employee' | 'admin' | 'chef';
 }
 
 User.init(
@@ -49,11 +49,11 @@ User.init(
         role: {
             type: new DataTypes.STRING(128),
             allowNull: false,
-            defaultValue: "employee",
+            defaultValue: 'employee',
         },
     },
     {
-        tableName: "users",
+        tableName: 'users',
         sequelize,
     }
 );

@@ -1,4 +1,4 @@
-import DiscardFeedback from "../models/discardFeedback";
+import DiscardFeedback from '../models/discardFeedback';
 
 class DiscardFeedbackService {
     private async checkDiscardFeedback(user_id: number, item_id: number, date: string) {
@@ -14,7 +14,7 @@ class DiscardFeedbackService {
         try {
             const existingFeedback = await this.checkDiscardFeedback(user_id, item_id, date);
             if (existingFeedback) {
-                throw new Error("You have already provided feedback for this item today");
+                throw new Error('You have already provided feedback for this item today');
             }
             const feedback = await DiscardFeedback.create({ user_id, item_id, date, question1, question2, question3 });
             return feedback;
@@ -27,7 +27,7 @@ class DiscardFeedbackService {
         try {
             const feedback = await DiscardFeedback.findByPk(id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             await feedback.destroy();
         } catch (error) {
@@ -39,7 +39,7 @@ class DiscardFeedbackService {
         try {
             const feedback = await DiscardFeedback.findByPk(id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             return feedback;
         } catch (error) {
@@ -73,8 +73,7 @@ class DiscardFeedbackService {
     async getMonthlyDiscardFeedbacks() {
         const date = new Date().toISOString().slice(0, 7);
         try {
-            const feedbacks = await DiscardFeedback.findAll({where: {date}});
-
+            const feedbacks = await DiscardFeedback.findAll({ where: { date } });
 
             return feedbacks.map((feedback) => {
                 return {
@@ -85,7 +84,7 @@ class DiscardFeedbackService {
                     question1: feedback.question1,
                     question2: feedback.question2,
                     question3: feedback.question3,
-                }
+                };
             });
         } catch (error) {
             throw new Error(error.message);
@@ -96,7 +95,7 @@ class DiscardFeedbackService {
         try {
             const feedback = await DiscardFeedback.findByPk(id);
             if (!feedback) {
-                throw new Error("Feedback not found");
+                throw new Error('Feedback not found');
             }
             feedback.question1 = question1;
             feedback.question2 = question2;

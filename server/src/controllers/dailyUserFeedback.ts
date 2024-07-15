@@ -51,7 +51,7 @@ class DailyUserFeedbackController {
         const date = new Date().toISOString().split('T')[0];
         try {
             const isAlreadyProvidedFeedback = await this.dailyUserFeedbackService.getUserFeedbacksByCondition(user_id, category, date);
-            console.log("isAlreadyProvidedFeedback", isAlreadyProvidedFeedback)
+            console.log('isAlreadyProvidedFeedback', isAlreadyProvidedFeedback);
             socket.emit('getUserFeedbacksByConditionSuccess', isAlreadyProvidedFeedback);
         } catch (error) {
             socket.emit('getUserFeedbacksByConditionError', { message: error.message });

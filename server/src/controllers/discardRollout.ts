@@ -15,7 +15,7 @@ class DiscardRollOutController {
         const date = new Date().toISOString().slice(0, 7);
         const { id: item_id, name: item_name, price } = data.items;
 
-        console.log('-----------------createDiscardRollOut-------', item_id, item_name, price, date)
+        console.log('-----------------createDiscardRollOut-------', item_id, item_name, price, date);
 
         try {
             const discardRollOut = await this.discardRollOutService.createDiscardRollOut(item_id, item_name, price, date);

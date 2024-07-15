@@ -1,4 +1,4 @@
-import MenuItem from "../models/menuItem";
+import MenuItem from '../models/menuItem';
 
 class MenuItemService {
     async createMenuItem(name: string, description: string, category: 'breakfast' | 'lunch' | 'dinner', price: number, availability_status: 'available' | 'unavailable') {
@@ -12,10 +12,10 @@ class MenuItemService {
 
     async deleteMenuItem(item_id: number) {
         try {
-            console.log("item_id", item_id)
+            console.log('item_id', item_id);
             const menuItem = await MenuItem.findByPk(item_id);
             if (!menuItem) {
-                throw new Error("Menu item not found");
+                throw new Error('Menu item not found');
             }
             await menuItem.destroy();
         } catch (error) {
@@ -24,11 +24,11 @@ class MenuItemService {
     }
 
     async getMenuItemById(item_id: number) {
-        console.log("item_id", item_id)
+        console.log('item_id', item_id);
         try {
             const menuItem = await MenuItem.findByPk(item_id);
             if (!menuItem) {
-                throw new Error("Menu item not found");
+                throw new Error('Menu item not found');
             }
             return menuItem;
         } catch (error) {
@@ -40,11 +40,11 @@ class MenuItemService {
         try {
             const menuItems = await MenuItem.findAll({
                 where: {
-                    item_id: item_ids
-                }
+                    item_id: item_ids,
+                },
             });
             if (!menuItems) {
-                throw new Error("Menu item not found");
+                throw new Error('Menu item not found');
             }
             return menuItems;
         } catch (error) {
@@ -65,11 +65,11 @@ class MenuItemService {
         try {
             const menuItems = await MenuItem.findAll({
                 where: {
-                    item_id: item_ids
-                }
+                    item_id: item_ids,
+                },
             });
             if (!menuItems) {
-                throw new Error("Menu item not found");
+                throw new Error('Menu item not found');
             }
             return menuItems;
         } catch (error) {
@@ -81,22 +81,22 @@ class MenuItemService {
         try {
             const menuItem = await MenuItem.findByPk(item_id);
             if (!menuItem) {
-                throw new Error("Menu item not found");
+                throw new Error('Menu item not found');
             }
 
-            if (name){
+            if (name) {
                 menuItem.name = name;
             }
-            if (description){
+            if (description) {
                 menuItem.description = description;
             }
-            if (category){
+            if (category) {
                 menuItem.category = category;
             }
-            if (price){
+            if (price) {
                 menuItem.price = price;
             }
-            if (availability_status){
+            if (availability_status) {
                 menuItem.availability_status = availability_status;
             }
 
@@ -111,7 +111,7 @@ class MenuItemService {
         try {
             const menuItem = await MenuItem.findByPk(item_id);
             if (!menuItem) {
-                throw new Error("Menu item not found");
+                throw new Error('Menu item not found');
             }
             menuItem.availability_status = availability_status;
             await menuItem.save();

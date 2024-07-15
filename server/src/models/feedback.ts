@@ -1,7 +1,7 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
-import MenuItem from "./menuItem";
-import User from "./user";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
+import MenuItem from './menuItem';
+import User from './user';
 
 interface FeedbackAttributes {
     feedback_id: number;
@@ -13,7 +13,7 @@ interface FeedbackAttributes {
     sentiment_score: number;
 }
 
-interface FeedbackCreationAttributes extends Optional<FeedbackAttributes, "feedback_id"> {}
+interface FeedbackCreationAttributes extends Optional<FeedbackAttributes, 'feedback_id'> {}
 
 class Feedback extends Model<FeedbackAttributes, FeedbackCreationAttributes> implements FeedbackAttributes {
     public comment!: string;
@@ -74,7 +74,7 @@ Feedback.init(
         },
     },
     {
-        tableName: "feedback",
+        tableName: 'feedback',
         sequelize,
     }
 );

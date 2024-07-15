@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface DailyMenuItemsAttributes {
     id: number;
@@ -8,7 +8,7 @@ interface DailyMenuItemsAttributes {
     date: string;
 }
 
-interface DailyMenuItemsCreationAttributes extends Optional<DailyMenuItemsAttributes, "id"> {}
+interface DailyMenuItemsCreationAttributes extends Optional<DailyMenuItemsAttributes, 'id'> {}
 
 class DailyMenuItems extends Model<DailyMenuItemsAttributes, DailyMenuItemsCreationAttributes> implements DailyMenuItemsAttributes {
     public date!: string;
@@ -38,7 +38,7 @@ DailyMenuItems.init(
         },
     },
     {
-        tableName: "daily_menu_items",
+        tableName: 'daily_menu_items',
         sequelize,
     }
 );

@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/database";
+import { DataTypes, Model, Optional } from 'sequelize';
+import sequelize from '../config/database';
 
 interface VoteItemAttributes {
     id: number;
@@ -9,7 +9,7 @@ interface VoteItemAttributes {
     votes: number;
 }
 
-interface VoteItemCreationAttributes extends Optional<VoteItemAttributes, "id" | "votes"> {}
+interface VoteItemCreationAttributes extends Optional<VoteItemAttributes, 'id' | 'votes'> {}
 
 class VoteItem extends Model<VoteItemAttributes, VoteItemCreationAttributes> implements VoteItemAttributes {
     public category!: string;
@@ -46,7 +46,7 @@ VoteItem.init(
         },
     },
     {
-        tableName: "vote_items",
+        tableName: 'vote_items',
         sequelize,
     }
 );

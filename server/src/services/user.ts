@@ -1,10 +1,10 @@
-import User from "../models/user";
-import EmployeePreferencesService from "./employeePreferences";
+import User from '../models/user';
+import EmployeePreferencesService from './employeePreferences';
 
 class UserService {
     async createUser(employeeID: string, name: string, email: string, password: string) {
         try {
-            const user = await User.create({ id:+employeeID, name, email, password });
+            const user = await User.create({ id: +employeeID, name, email, password });
             return user;
         } catch (error) {
             throw new Error(error.message);
@@ -15,7 +15,7 @@ class UserService {
         try {
             const user = await User.findByPk(id);
             if (!user) {
-                throw new Error("User not found");
+                throw new Error('User not found');
             }
             await user.destroy();
         } catch (error) {
@@ -36,7 +36,7 @@ class UserService {
         try {
             const user = await User.findByPk(id);
             if (!user) {
-                throw new Error("User not found");
+                throw new Error('User not found');
             }
             return user;
         } catch (error) {
@@ -57,7 +57,7 @@ class UserService {
         try {
             const user = await User.findByPk(id);
             if (!user) {
-                throw new Error("User not found");
+                throw new Error('User not found');
             }
             user.name = name;
             user.email = email;
