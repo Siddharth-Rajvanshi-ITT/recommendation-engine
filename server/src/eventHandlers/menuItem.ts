@@ -1,36 +1,37 @@
 import { Socket } from 'socket.io';
 import MenuItemSocketHandler from '../controllers/menuItem';
 
-const menuItemSocketHandler = new MenuItemSocketHandler();
 
 export default class MenuItemEventHandler {
-    private socket;
+    private socket: Socket;
+    private menuItemSocketHandler: MenuItemSocketHandler;
 
     constructor(socket: Socket) {
         this.socket = socket;
+        this.menuItemSocketHandler = new MenuItemSocketHandler();
     }
 
     listen() {
         this.socket.on('createMenuItem', async (data) => {
-            await menuItemSocketHandler.createMenuItem(this.socket, data);
+            await this.menuItemSocketHandler.createMenuItem(this.socket, data);
         });
         this.socket.on('getMenuItems', async () => {
-            await menuItemSocketHandler.getMenuItems(this.socket);
+            await this.menuItemSocketHandler.getMenuItems(this.socket);
         });
         this.socket.on('getMenuItemById', async (data) => {
-            await menuItemSocketHandler.getMenuItemById(this.socket, data);
+            await this.menuItemSocketHandler.getMenuItemById(this.socket, data);
         });
         this.socket.on('getMenuItemByIds', async (data) => {
-            await menuItemSocketHandler.getMenuItemByIds(this.socket, data);
+            await this.menuItemSocketHandler.getMenuItemByIds(this.socket, data);
         });
         this.socket.on('updateMenuItem', async (data) => {
-            await menuItemSocketHandler.updateMenuItem(this.socket, data);
+            await this.menuItemSocketHandler.updateMenuItem(this.socket, data);
         });
         this.socket.on('deleteMenuItem', async (data) => {
-            await menuItemSocketHandler.deleteMenuItem(this.socket, data);
+            await this.menuItemSocketHandler.deleteMenuItem(this.socket, data);
         });
         this.socket.on('updateMenuItemAvailability', async (data) => {
-            await menuItemSocketHandler.updateMenuItemAvailability(this.socket, data);
+            await this.menuItemSocketHandler.updateMenuItemAvailability(this.socket, data);
         });
     }
 }

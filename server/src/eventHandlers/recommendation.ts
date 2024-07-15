@@ -1,30 +1,30 @@
 import { Socket } from 'socket.io';
 import RecommendationSocketHandler from '../controllers/recommendation';
 
-const recommendationSocketHandler = new RecommendationSocketHandler();
-
 export default class RecommendationEventHandler {
-    private socket;
+    private socket: Socket;
+    private recommendationSocketHandler: RecommendationSocketHandler;
 
     constructor(socket: Socket) {
         this.socket = socket;
+        this.recommendationSocketHandler = new RecommendationSocketHandler();
     }
 
     listen() {
         this.socket.on('getRecommendedItems', async (data) => {
             const { menu_type } = data;
-            await recommendationSocketHandler.getRecommendedMenuItems(this.socket, menu_type);
+            await this.recommendationSocketHandler.getRecommendedMenuItems(this.socket, menu_type);
         });
 
         this.socket.on('getDiscardableItems', async (data) => {
             const { menu_type } = data;
-            await recommendationSocketHandler.getDiscardableMenuItems(this.socket, menu_type);
+            await this.recommendationSocketHandler.getDiscardableMenuItems(this.socket, menu_type);
         });
 
         this.socket.on('discardItem', async (data) => {
             console.log(data);
             const { items: selectedItems } = data;
-            await recommendationSocketHandler.discardMenuItems(this.socket, selectedItems);
+            await this.recommendationSocketHandler.discardMenuItems(this.socket, selectedItems);
         });
     }
 }

@@ -1,34 +1,34 @@
 import { Socket } from 'socket.io';
 import NotificationSocketHandler from '../controllers/notifications';
 
-const notificationSocketHandler = new NotificationSocketHandler();
-
 export default class NotificationEventHandler {
-    private socket;
+    private socket: Socket;
+    private notificationSocketHandler: NotificationSocketHandler;
 
     constructor(socket: Socket) {
         this.socket = socket;
+        this.notificationSocketHandler = new NotificationSocketHandler();
     }
 
     listen() {
         this.socket.on('createNotification', async (data) => {
             console.log('Data: ', data);
-            await notificationSocketHandler.createNotification(this.socket, data);
+            await this.notificationSocketHandler.createNotification(this.socket, data);
         });
         this.socket.on('getNotifications', async () => {
-            await notificationSocketHandler.getNotifications(this.socket);
+            await this.notificationSocketHandler.getNotifications(this.socket);
         });
         this.socket.on('getNotificationById', async (data) => {
-            await notificationSocketHandler.getNotificationById(this.socket, data);
+            await this.notificationSocketHandler.getNotificationById(this.socket, data);
         });
         this.socket.on('getNotificationByDate', async (data) => {
-            await notificationSocketHandler.getNotificationByDate(this.socket, data);
+            await this.notificationSocketHandler.getNotificationByDate(this.socket, data);
         });
         this.socket.on('updateNotification', async (data) => {
-            await notificationSocketHandler.updateNotification(this.socket, data);
+            await this.notificationSocketHandler.updateNotification(this.socket, data);
         });
         this.socket.on('deleteNotification', async (data) => {
-            await notificationSocketHandler.deleteNotification(this.socket, data);
+            await this.notificationSocketHandler.deleteNotification(this.socket, data);
         });
     }
 }
