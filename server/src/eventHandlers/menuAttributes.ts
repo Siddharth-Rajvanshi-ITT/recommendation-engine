@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io';
 import MenuAttributesController from '../controllers/menuAttributes';
 
-const menuAttributesController = new MenuAttributesController();
 
 export default class MenuAttributesEventHandler {
     private socket: Socket;
+    private menuAttributesController: MenuAttributesController;
 
     constructor(socket: Socket) {
         this.socket = socket;
@@ -12,19 +12,19 @@ export default class MenuAttributesEventHandler {
 
     listen() {
         this.socket.on('createMenuAttribute', async (data) => {
-            await menuAttributesController.createMenuAttribute(this.socket, data);
+            await this.menuAttributesController.createMenuAttribute(this.socket, data);
         });
         this.socket.on('getMenuAttributes', async () => {
-            await menuAttributesController.getAllMenuAttributes(this.socket);
+            await this.menuAttributesController.getAllMenuAttributes(this.socket);
         });
         this.socket.on('getMenuAttribute', async (data) => {
-            await menuAttributesController.getMenuAttribute(this.socket, data);
+            await this.menuAttributesController.getMenuAttribute(this.socket, data);
         });
         this.socket.on('updateMenuAttribute', async (data) => {
-            await menuAttributesController.updateMenuAttribute(this.socket, data);
+            await this.menuAttributesController.updateMenuAttribute(this.socket, data);
         });
         this.socket.on('deleteMenuAttribute', async (data) => {
-            await menuAttributesController.deleteMenuAttribute(this.socket, data);
+            await this.menuAttributesController.deleteMenuAttribute(this.socket, data);
         });
     }
 }

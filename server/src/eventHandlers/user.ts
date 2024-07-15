@@ -1,30 +1,31 @@
 import { Socket } from 'socket.io';
 import UserSocketHandler from '../controllers/user';
 
-const userSocketHandler = new UserSocketHandler();
 
 export default class UserEventHandler {
-    private socket;
+    private socket: Socket;
+    private userSocketHandler: UserSocketHandler;
 
     constructor(socket: Socket) {
         this.socket = socket;
+        this.userSocketHandler = new UserSocketHandler();
     }
 
     listen() {
         this.socket.on('createUser', async (data) => {
-            await userSocketHandler.createUser(this.socket, data);
+            await this.userSocketHandler.createUser(this.socket, data);
         });
         this.socket.on('getUsers', async () => {
-            await userSocketHandler.getUsers(this.socket);
+            await this.userSocketHandler.getUsers(this.socket);
         });
         this.socket.on('getUserById', async (data) => {
-            await userSocketHandler.getUserById(this.socket, data);
+            await this.userSocketHandler.getUserById(this.socket, data);
         });
         this.socket.on('updateUser', async (data) => {
-            await userSocketHandler.updateUser(this.socket, data);
+            await this.userSocketHandler.updateUser(this.socket, data);
         });
         this.socket.on('deleteUser', async (data) => {
-            await userSocketHandler.deleteUser(this.socket, data);
+            await this.userSocketHandler.deleteUser(this.socket, data);
         });
     }
 }
