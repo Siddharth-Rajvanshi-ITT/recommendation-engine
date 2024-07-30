@@ -8,6 +8,7 @@ export default class MenuAttributesEventHandler {
 
     constructor(socket: Socket) {
         this.socket = socket;
+        this.menuAttributesController = new MenuAttributesController()
     }
 
     listen() {

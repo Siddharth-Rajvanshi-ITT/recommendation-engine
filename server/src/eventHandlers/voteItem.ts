@@ -7,6 +7,7 @@ export default class VoteItemEventHandler {
 
     constructor(socket: Socket) {
         this.socket = socket;
+        this.voteItemController = new VoteItemController()
     }
 
     public listen(): void {
